@@ -12,7 +12,7 @@ json_file_save_dir = '../data/src'
 json_file_name = 'structure_data.json'
 
 # Get data:
-f = open(os.path.join(json_file_save_dir, json_file_name))
+f = open(os.path.join(os.path.dirname(__file__), json_file_save_dir, json_file_name))
 raw_json = json.load(f)
 f.close()
 
@@ -21,27 +21,13 @@ class Structure(object):
     classdocs
     '''
 
-    def __init__(self, structure_id, acronym, graph_order, rgb, path_to_root, name):
+    def __init__(self, import_dict):
         '''
         Constructor
         '''
         
-        self.structure_id = structure_id
-        self.acronym = acronym
-        self.graph_order = graph_order
-        self.red = rgb[0]
-        self.green = rgb[1]
-        self.blue = rgb[2]
-        self.path_to_root = path_to_root
-        if len(path_to_root) > 1:
-            self.parent_id = path_to_root[-2]
-        else:
-            self.parent_id = path_to_root[0]
-        self.name = name
-        self.kwargs = {}
-        
-        if self.is_child_of(512):
-            self.graph_order = self.graph_order + 10000000
+        for key, val in import_dict.items():
+            setattr(self, key, val)
 
     def __str__(self):
         return self.acronym
@@ -58,18 +44,22 @@ def hex_to_rgb(value):
 structure_list = []
 for region_dict in raw_json['msg']:
     
-    structure_id = int(region_dict['id'])
-    acronym = str(region_dict['acronym'])
-    graph_order = int(region_dict['graph_order'])
-    rgb = hex_to_rgb(region_dict['color_hex_triplet'])
-    path_to_root = map(int,region_dict['structure_id_path'][1:-1].split('/'))
-    name = str(region_dict['name'])
+    import_dict = {}
     
-    # Damn 'SUM' typo:
+    import_dict['structure_id'] = int(region_dict['id'])
+    acronym = str(region_dict['acronym'])
+    # Damn 'SUM ' typo:
     if acronym == 'SUM ':
         acronym = 'SUM'
+    import_dict['acronym'] = acronym
+    import_dict['graph_order'] = int(region_dict['graph_order'])
+    import_dict['rgb'] = hex_to_rgb(region_dict['color_hex_triplet'])
+    import_dict['path_to_root'] = map(int,region_dict['structure_id_path'][1:-1].split('/'))
+    import_dict['name'] = str(region_dict['name'])
+    
 
-    structure_list.append(Structure(structure_id, acronym, graph_order, rgb, path_to_root, name))
+
+    structure_list.append(Structure(import_dict))
     
 
  
