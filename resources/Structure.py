@@ -6,10 +6,13 @@ Created on Dec 6, 2012
 
 import os
 import json
+from resources.Mask import Mask
+import h5py
 
 # Settings:
 json_file_save_dir = '../data/src'
 json_file_name = 'structure_data.json'
+structure_mask_file_name = os.path.join(os.path.dirname(__file__), '../data/src/structure_masks.hdf5')
 
 # Get data:
 f = open(os.path.join(os.path.dirname(__file__), json_file_save_dir, json_file_name))
@@ -28,12 +31,29 @@ class Structure(object):
         
         for key, val in import_dict.items():
             setattr(self, key, val)
+            
+        self.child_list = None
 
     def __str__(self):
         return self.acronym
 
-    def is_child_of(self, parent_id_to_test):
-        return parent_id_to_test in self.path_to_root
+    def is_child_of(self, parent_structure):
+        return parent_structure.structure_id in self.path_to_root
+    
+    @staticmethod
+    def get_mask_from_id_nonzero(structure_id):
+        curr_acronym = id_structure_dict[structure_id].acronym
+        return Mask.read_from_hdf5(structure_mask_file_name, '%s_nonzero' % curr_acronym)
+    
+    @staticmethod
+    def get_mask_from_id_right_hemisphere_nonzero(structure_id):
+        curr_acronym = id_structure_dict[structure_id].acronym
+        return Mask.read_from_hdf5(structure_mask_file_name, '%s_right_nonzero' % curr_acronym)
+    
+    @staticmethod
+    def get_mask_from_id_left_hemisphere_nonzero(structure_id):
+        curr_acronym = id_structure_dict[structure_id].acronym
+        return Mask.read_from_hdf5(structure_mask_file_name, '%s_left_nonzero' % curr_acronym)
 
 def hex_to_rgb(value):
     value = value.lstrip('#')
@@ -57,11 +77,11 @@ for region_dict in raw_json['msg']:
     import_dict['path_to_root'] = map(int,region_dict['structure_id_path'][1:-1].split('/'))
     import_dict['name'] = str(region_dict['name'])
     
-
-
     structure_list.append(Structure(import_dict))
     
-
+# Set child list:
+for s in structure_list:
+    s.child_list = [s2 for s2 in structure_list if s2.is_child_of(s)]
  
 # Create easy_access dictionaries:
 id_structure_dict = {}
@@ -72,9 +92,11 @@ for s in structure_list:
 
 
 
-
-
-
+# ii = 1
+# print structure_list[ii].structure_id
+# L = [x.structure_id for x in structure_list[ii].child_list]
+# print L
+# print structure_list[ii].child_list[0].path_to_root
 
 
 

@@ -15,12 +15,21 @@ echo "Refreshing raw data"
 #python refresh_raw_data.py
 echo "    Done."
 
-echo "Processing data"
-matlab -nodisplay -nosplash -nodesktop -r 'generate_matrix;exit'
+echo "Extracting experiments to hdf5"
+#python extract_experiment_to_hdf5.py
 echo "    Done."
 
+echo "Extracting grid annotation"
+#python extract_grid_annotation.py
+echo "    Done."
 
+echo "Creating masks"
+#python create_masks.py
+echo "    Done."
 
+echo "Creating density matrix"
+#python create_density.py
+echo "    Done."
 
 
 
