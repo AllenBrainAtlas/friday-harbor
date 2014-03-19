@@ -1,3 +1,21 @@
+# Copyright 2014 Allen Institute for Brain Science
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Nicholas Cain
+# Allen Institute for Brain Science
+# June 11 2014
+# nicholasc@alleninstitute.org
+
 import os
 import numpy as np
 import resources.Annotation as Annotation
@@ -88,14 +106,35 @@ class Mask(object):
             for x in self_set:
                 if not x in other_set:
                     new_set.add(x)
-                    
-            xx, yy, zz = zip(*list(new_set))
+            
+            if len(new_set) == 0:
+                xx, yy, zz = np.array([]), np.array([]), np.array([]) 
+            else:
+                xx, yy, zz = zip(*list(new_set))
             
             
         return Mask((np.array(xx), np.array(yy), np.array(zz)))
         
 
+    def plot3d(self, fig=None):
+        
+        import mayavi.mlab as ml
+        from resources.Annotation import all_zero
+        import copy
+        
+        if fig == None:
+            fig = ml.figure()
+            
+        plot_shape = copy.copy(all_zero)
+        plot_shape[self.mask] = 1.
+        
+        print np.shape(plot_shape)
+        print plot_shape
+            
+        ml.contour3d(plot_shape)
 
+            
+# nonzero_ind_mask = Mask.read_from_hdf5('../data/src/nonzero_ind_mask.hdf5')
  
 
 

@@ -15,3 +15,15 @@
 # Allen Institute for Brain Science
 # June 11 2014
 # nicholasc@alleninstitute.org
+
+To Run Linear model from scratch:
+
+1) run ./data/scripts/regenerate_data.sh
+2) run ./full_matrix/create_experiment_matrices.py
+3) run ./full_matrix/run_linear_model.py
+
+Results will be deposited in ./full_matrix/results/ 
+There is a static method on the class ./resources/LinearModel.py for loading the result (load_from_hdf5)
+
+The excel spreadsheet from the manuscript is included in ./legacy/xls_csv_mat/, in three different representations.
+Execute run_linear_model_manuscript.py to fit with the frozen original data.

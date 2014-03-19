@@ -1,8 +1,20 @@
-'''
-Created on Jan 25, 2013
-
-@author: nicholasc
-'''
+# Copyright 2014 Allen Institute for Brain Science
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Nicholas Cain
+# Allen Institute for Brain Science
+# June 11 2014
+# nicholasc@alleninstitute.org
 
 import os
 import json
@@ -14,6 +26,7 @@ json_file_save_dir = os.path.join(os.path.dirname(__file__), '../data/src')
 raw_data_file_save_dir = os.path.join(os.path.dirname(__file__), '../data/src/raw_data')
 json_file_name = 'experiment_data.json'
 injection_mask_file_name = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks.hdf5')
+injection_mask_file_name_shell = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks_shell.hdf5')
 
 # Get data:
 f = open(os.path.join(os.path.dirname(__file__), json_file_save_dir, json_file_name))
@@ -53,9 +66,22 @@ class Experiment(object):
         else:
             return d
         
+    def get_injection(self):
+        return self.load_hdf5()['injection']
+    
+    @property
+    def mask(self):
+        return Experiment.get_injection_mask(self.id)
+        
     @staticmethod
-    def get_injection_mask(LIMS_id):
-        return Mask.read_from_hdf5(injection_mask_file_name, subgroup=str(LIMS_id))
+    def get_injection_mask(LIMS_id, shell=False):
+        
+        if shell == False:
+            return Mask.read_from_hdf5(injection_mask_file_name, subgroup=str(LIMS_id))
+        elif shell == True:
+            return Mask.read_from_hdf5(injection_mask_file_name_shell, subgroup=str(LIMS_id))
+        else:
+            raise Exception
     
     @staticmethod
     def get_injection_mask_inverse(LIMS_id):
@@ -93,8 +119,22 @@ for e_dict in raw_json['msg']:
     import_dict['structure_id'] = int(e_dict['structure-id'])
     import_dict['sum'] = float(e_dict['sum'])
 
-    import_dict['data_file_name'] = os.path.join(raw_data_file_save_dir, str(import_dict['id']),'density_injection_%s.hdf5' % import_dict['id'])
+    import_dict['data_file_name'] = os.path.join(raw_data_file_save_dir, str(import_dict['id']),'density_energy_injection_%s.hdf5' % import_dict['id'])
+
+    if import_dict['strain'] == 'C57BL/6J':
+        import_dict['wildtype'] = True 
+    else:
+        import_dict['wildtype'] = False
 
     curr_experiment = Experiment(import_dict)
     experiment_list.append(curr_experiment)
+
+LIMS_id_experiment_dict = {}
+for e in experiment_list:
+    LIMS_id_experiment_dict[e.id] = e
+
+# TODO
+all_experiment_LIMS_list = [e.id for e in experiment_list]
+wildtype_experiment_LIMS_list = [e.id for e in experiment_list if e.wildtype == True]
+
     
