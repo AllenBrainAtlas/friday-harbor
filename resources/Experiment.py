@@ -136,5 +136,4 @@ for e in experiment_list:
 # TODO
 all_experiment_LIMS_list = [e.id for e in experiment_list]
 wildtype_experiment_LIMS_list = [e.id for e in experiment_list if e.wildtype == True]
-
     

@@ -19,15 +19,15 @@
 import os
 import resources.utilities as utilities
 import h5py
-import resources.Experiment as Experiment
 
 # Settings:
 rel_data_dir = './results/'
 save_file_name = 'experiment_matrices.hdf5'
-LIMS_id_list = Experiment.wildtype_experiment_LIMS_list
+experiment_list_file_name = '../data/src/LIMS_id_list.p'
 
 # Initializations:
 path_to_this_file = os.path.dirname(os.path.realpath(__file__))
+LIMS_id_list = utilities.unpickle(experiment_list_file_name)
 
 # Load data:
 source_id_list = utilities.unpickle('../data/src/structure_id_list.p')

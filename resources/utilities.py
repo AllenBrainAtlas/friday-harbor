@@ -21,7 +21,6 @@ import os
 import numpy as np
 import re
 import h5py
-import Experiment
 
 def pickle(data, file_name):
     
@@ -95,10 +94,14 @@ def read_dictionary_from_group(group):
     return dictionary
 
 
-def generate_optimization_matrices(source_id_list, target_id_list, minimum_number_voxels_in_at_least_one_injection = 50, LIMS_id_list = Experiment.all_experiment_LIMS_list, source_shell=False):
+def generate_optimization_matrices(source_id_list, target_id_list, minimum_number_voxels_in_at_least_one_injection = 50, LIMS_id_list = None, source_shell=False):
 
     from resources.Mask import Mask
     from resources.Structure import Structure
+    import resources.Experiment as Experiment
+    
+    if LIMS_id_list == None:
+        LIMS_id_list = Experiment.all_experiment_LIMS_list 
     
     # Get injection masks:
     PD_dict = {}

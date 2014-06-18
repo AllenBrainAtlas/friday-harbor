@@ -23,6 +23,7 @@ from resources.Mask import Mask
 import resources.Annotation as Annotation
 import resources.Structure as Structure
 import resources.Experiment as Experiment
+import os
 
 # Save off the nonzero mask: 
 nonzero_ind_mask = Mask(np.where(Annotation.structure_annotation != 0))
@@ -70,38 +71,40 @@ f.close()
 f_inj = h5py.File('../src/injection_masks.hdf5', 'w')
 for e in Experiment.experiment_list:
       
-    print e.id
-      
-    f_in = h5py.File(e.data_file_name, 'r')
-    injection_vals = f_in['injection'].value 
-    f_in.close()
-     
-    injection_mask = Mask(np.where(injection_vals != 0))    
-    injection_mask.write_to_hdf5_group(f_inj, create_name=str(e.id))
+    if os.path.isfile(e.data_file_name):
+        print e.id
+          
+        f_in = h5py.File(e.data_file_name, 'r')
+        injection_vals = f_in['injection'].value 
+        f_in.close()
+         
+        injection_mask = Mask(np.where(injection_vals != 0))    
+        injection_mask.write_to_hdf5_group(f_inj, create_name=str(e.id))
    
 f_inj.close()
 
 # Create injection masks with a shell:
 f_inj = h5py.File('../src/injection_masks_shell.hdf5', 'w')
 for e in Experiment.experiment_list:
-      
-    print e.id
-      
-    f_in = h5py.File(e.data_file_name, 'r')
-    injection_vals = f_in['injection'].value 
-    f_in.close()
-     
-    injection_mask = Mask(np.where(injection_vals != 0))
-    for c_x, c_y, c_z in zip(*injection_mask.mask):
-        for x_i, y_i, z_i in itertools.product(c_x+np.array([-1,0,1]),
-                                       c_y+np.array([-1,0,1]),
-                                       c_z+np.array([-1,0,1])):
-            if 0<=x_i<np.shape(injection_vals)[0] and 0<=y_i<np.shape(injection_vals)[1] and 0<=z_i<np.shape(injection_vals)[2]: 
-                injection_vals[x_i, y_i, z_i] = 1
-     
-    injection_mask_shell = Mask(np.where(injection_vals != 0))
-     
-    injection_mask_shell.write_to_hdf5_group(f_inj, create_name=str(e.id))
+    
+    if os.path.isfile(e.data_file_name):
+        print e.id
+          
+        f_in = h5py.File(e.data_file_name, 'r')
+        injection_vals = f_in['injection'].value 
+        f_in.close()
+         
+        injection_mask = Mask(np.where(injection_vals != 0))
+        for c_x, c_y, c_z in zip(*injection_mask.mask):
+            for x_i, y_i, z_i in itertools.product(c_x+np.array([-1,0,1]),
+                                           c_y+np.array([-1,0,1]),
+                                           c_z+np.array([-1,0,1])):
+                if 0<=x_i<np.shape(injection_vals)[0] and 0<=y_i<np.shape(injection_vals)[1] and 0<=z_i<np.shape(injection_vals)[2]: 
+                    injection_vals[x_i, y_i, z_i] = 1
+         
+        injection_mask_shell = Mask(np.where(injection_vals != 0))
+         
+        injection_mask_shell.write_to_hdf5_group(f_inj, create_name=str(e.id))
      
 f_inj.close()
 
