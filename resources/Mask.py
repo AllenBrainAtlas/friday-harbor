@@ -116,25 +116,7 @@ class Mask(object):
         return Mask((np.array(xx), np.array(yy), np.array(zz)))
         
 
-    def plot3d(self, fig=None):
-        
-        import mayavi.mlab as ml
-        from resources.Annotation import all_zero
-        import copy
-        
-        if fig == None:
-            fig = ml.figure()
-            
-        plot_shape = copy.copy(all_zero)
-        plot_shape[self.mask] = 1.
-        
-        print np.shape(plot_shape)
-        print plot_shape
-            
-        ml.contour3d(plot_shape)
 
-            
-# nonzero_ind_mask = Mask.read_from_hdf5('../data/src/nonzero_ind_mask.hdf5')
  
 
 

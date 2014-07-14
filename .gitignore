@@ -1,4 +1,5 @@
 *.pyc
 .project
 .pydevproject
-/data/src
+/data/src/grid_annotation/*
+/data/src/raw_data/*

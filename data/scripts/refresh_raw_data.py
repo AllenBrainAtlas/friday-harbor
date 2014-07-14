@@ -18,16 +18,16 @@
 
 import requests
 import os
-from resources.utilities import unpickle
 import zipfile
 import shutil
+from resources.Experiment import wildtype_experiment_LIMS_list
 
 # Settings:
 file_save_dir = '../src/raw_data'
 experiment_list_file_name = '../src/LIMS_id_list.p' 
 
 # Get list of experiments:
-experiment_list = unpickle(experiment_list_file_name)
+experiment_list = wildtype_experiment_LIMS_list
 
 for curr_LIMS_id in experiment_list:
 
