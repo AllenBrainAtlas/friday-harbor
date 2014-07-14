@@ -18,6 +18,8 @@
 
 To Run Linear model from scratch:
 
+
+0) Add the directory containing this file to your python path
 1) run ./data/scripts/regenerate_data.sh
 2) run ./full_matrix/create_experiment_matrices.py
 3) run ./full_matrix/run_linear_model.py
@@ -26,6 +28,7 @@ Dependencies (python packages):
 	numpy/scipy
 	h5py
 	requests
+	statsmodels
 
 Results will be deposited in ./full_matrix/results/ 
 There is a static method on the class ./resources/LinearModel.py for loading the result (load_from_hdf5)
