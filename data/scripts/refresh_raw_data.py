@@ -20,20 +20,20 @@ import requests
 import os
 import zipfile
 import shutil
-from resources.Experiment import wildtype_experiment_LIMS_list
+import resources.Experiment
 
 # Settings:
-file_save_dir = '../src/raw_data'
-experiment_list_file_name = '../src/LIMS_id_list.p' 
+file_save_dir = 'data/src/raw_data'
+experiment_lists = resources.Experiment.experiment_lists()
 
 # Get list of experiments:
-experiment_list = wildtype_experiment_LIMS_list
+experiment_list = experiment_lists['wildtype']
 
-for curr_LIMS_id in experiment_list:
+for experiment_id in experiment_list:
 
     # Initializations:
-    file_name = os.path.join(os.path.dirname(__file__), file_save_dir, 'experiment_%s.zip' % curr_LIMS_id)
-    experiment_info_url = 'http://api.brain-map.org/grid_data/download/%s?include=density,injection' % curr_LIMS_id
+    file_name = os.path.join(file_save_dir, 'experiment_%s.zip' % experiment_id)
+    experiment_info_url = 'http://api.brain-map.org/grid_data/download/%s?include=density,injection' % experiment_id
     
     # Get data:
     with open(file_name,'wb') as handle:
@@ -45,7 +45,7 @@ for curr_LIMS_id in experiment_list:
     handle.close()
     
     # Unzip:
-    unzip_path = os.path.join(os.path.dirname(__file__), file_save_dir, '%s' % curr_LIMS_id)
+    unzip_path = os.path.join(file_save_dir, '%s' % experiment_id)
     shutil.rmtree(unzip_path, unzip_path)
     os.mkdir(unzip_path)
     zf = zipfile.ZipFile(file_name, 'r')

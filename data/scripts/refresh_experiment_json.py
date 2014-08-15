@@ -21,7 +21,7 @@ import requests
 import os
 
 # Settings:
-json_file_save_dir = '../src'
+json_file_save_dir = 'data/src'
 json_file_name = 'experiment_data.json'
 experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'
 

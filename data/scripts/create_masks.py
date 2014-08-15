@@ -20,41 +20,44 @@ import itertools
 import h5py
 import numpy as np
 from resources.Mask import Mask
-import resources.Annotation as Annotation
 import resources.Structure as Structure
 import resources.Experiment as Experiment
+from resources.Annotation import StructureAnnotation
 import os
 
+structure_annotation_file = 'data/src/grid_annotation/gridAnnotation.hdf5'
+structure_annotation = StructureAnnotation.from_hdf5(structure_annotation_file)
+
 # Save off the nonzero mask: 
-nonzero_ind_mask = Mask(np.where(Annotation.structure_annotation != 0))
-nonzero_ind_mask.write_to_hdf5('../src/nonzero_ind_mask.hdf5')
+nonzero_ind_mask = Mask(np.where(structure_annotation != 0))
+nonzero_ind_mask.write_to_hdf5('data/src/nonzero_ind_mask.hdf5')
   
 # Save off the left hemisphere mask:
-left_hemisphere_mask = Mask(np.where(Annotation.hemisphere_annotation == 'L'))
-left_hemisphere_mask.write_to_hdf5('../src/left_hemisphere_mask.hdf5')
+left_hemisphere_mask = Mask(structure_annotation.left_hemisphere)
+left_hemisphere_mask.write_to_hdf5('data/src/left_hemisphere_mask.hdf5')
  
 # Save off the right hemisphere mask:
-right_hemisphere_mask = Mask(np.where(Annotation.hemisphere_annotation == 'R'))
-right_hemisphere_mask.write_to_hdf5('../src/right_hemisphere_mask.hdf5')
+right_hemisphere_mask = Mask(structure_annotation.right_hemisphere)
+right_hemisphere_mask.write_to_hdf5('data/src/right_hemisphere_mask.hdf5')
   
 # Save off the left hemisphere nonzero mask:
 left_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, left_hemisphere_mask)
-left_hemisphere_nonzero_ind_mask.write_to_hdf5('../src/left_hemisphere_nonzero_ind_mask.hdf5')
+left_hemisphere_nonzero_ind_mask.write_to_hdf5('data/src/left_hemisphere_nonzero_ind_mask.hdf5')
  
 # Save off the right hemisphere nonzero mask:
 right_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, right_hemisphere_mask)
-right_hemisphere_nonzero_ind_mask.write_to_hdf5('../src/right_hemisphere_nonzero_ind_mask.hdf5')
+right_hemisphere_nonzero_ind_mask.write_to_hdf5('data/src/right_hemisphere_nonzero_ind_mask.hdf5')
  
 # Create universe mask:
-universal_mask = Mask(np.where(Annotation.structure_annotation != np.nan))
-universal_mask.write_to_hdf5('../src/universal_mask.hdf5')
+universal_mask = Mask(np.where(structure_annotation != np.nan))
+universal_mask.write_to_hdf5('data/src/universal_mask.hdf5')
  
 # Create structure masks:
-f = h5py.File('../src/structure_masks.hdf5','w')
+f = h5py.File('data/src/structure_masks.hdf5','w')
 for s in Structure.structure_list:
           
     # Whole region:
-    child_mask_list = [Mask(np.where(Annotation.structure_annotation == s_child.structure_id)) for s_child in s.child_list]
+    child_mask_list = [Mask(np.where(structure_annotation == s_child.structure_id)) for s_child in s.child_list]
     structure_mask=reduce(Mask.union, child_mask_list)
     structure_mask.write_to_hdf5_group(f, create_name='%s_nonzero' % s.acronym)
       
@@ -68,7 +71,7 @@ for s in Structure.structure_list:
 f.close()
 
 # Create injection masks:
-f_inj = h5py.File('../src/injection_masks.hdf5', 'w')
+f_inj = h5py.File('data/src/injection_masks.hdf5', 'w')
 for e in Experiment.experiment_list:
       
     if os.path.isfile(e.data_file_name):
@@ -84,7 +87,7 @@ for e in Experiment.experiment_list:
 f_inj.close()
 
 # Create injection masks with a shell:
-f_inj = h5py.File('../src/injection_masks_shell.hdf5', 'w')
+f_inj = h5py.File('data/src/injection_masks_shell.hdf5', 'w')
 for e in Experiment.experiment_list:
     
     if os.path.isfile(e.data_file_name):

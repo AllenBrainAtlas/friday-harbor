@@ -25,9 +25,9 @@ import zipfile
 import shutil
 
 # Settings:
-file_save_dir = '../src'
+file_save_dir = 'data/src'
 grid_annotation_url = 'http://api.brain-map.org/api/v2/well_known_file_download/197676381'
-file_name = os.path.join(os.path.dirname(__file__), file_save_dir, 'grid_annotation.zip')
+file_name = os.path.join(file_save_dir, 'grid_annotation.zip')
 
 # Get data:
 with open(file_name,'wb') as handle:
@@ -39,7 +39,7 @@ with open(file_name,'wb') as handle:
 handle.close()
 
 # Unzip:
-unzip_path = os.path.join(os.path.dirname(__file__), file_save_dir, 'grid_annotation')
+unzip_path = os.path.join(file_save_dir, 'grid_annotation')
 shutil.rmtree(unzip_path, unzip_path)
 os.mkdir(unzip_path)
 zf = zipfile.ZipFile(file_name, 'r')
@@ -48,7 +48,7 @@ zf.close()
 os.remove(file_name)
 
 # Settings:
-file_save_dir = '../src/grid_annotation'
+file_save_dir = 'data/src/grid_annotation'
 grid_annotation_file_name_prefix = 'gridAnnotation'
  
 # Extract grid annotation:

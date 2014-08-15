@@ -21,7 +21,7 @@ import requests
 import os
 
 # Settings:
-json_file_save_dir = '../src'
+json_file_save_dir = 'data/src'
 json_file_name = 'structure_data.json'
 anatomical_structure_info_url = 'http://api.brain-map.org/api/v2/data/Structure/query.json?criteria=[graph_id$eq1]&order=structures.graph_order&tabular=structures.id,structures.acronym,structures.graph_order,structures.color_hex_triplet,structures.structure_id_path,structures.name&start_row=0&num_rows=all'
 
