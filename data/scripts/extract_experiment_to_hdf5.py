@@ -19,22 +19,28 @@
 import h5py
 import os
 import numpy as np
-from resources.utilities import extract_volume
+from resources import mhd 
+from resources.Mask import Mask
 from resources.utilities import write_dictionary_to_group
 
 # Settings:
-raw_data_dir = '../src/raw_data'
-save_file_name_prefix = 'density_energy_injection'
+raw_data_dir = 'data/src/raw_data'
+f_proj = h5py.File('data/src/projection_density.hdf5', 'w')
+f_inj_vol = h5py.File('data/src/injection_volumes.hdf5', 'w')
 
 # Extract volumes of PD and injection sites:
-for curr_LIMS_id in os.listdir(raw_data_dir):
-    curr_dir = os.path.join(raw_data_dir, curr_LIMS_id)
+for experiment_id in os.listdir(raw_data_dir):
+    curr_dir = os.path.join(raw_data_dir, experiment_id)
+  
+    density_mhd = os.path.join(curr_dir, 'density.mhd')
+    density_info, density_array = mhd.read(density_mhd)
+
+    f_proj[experiment_id] = density_array
     
-    _, arr_density, _ = extract_volume(curr_dir, 'density', dtype = np.float32)
-    _, arr_injection, _ = extract_volume(curr_dir, 'injection', dtype = np.float32)
-    
-    save_file_name = os.path.join(curr_dir, '%s_%s.hdf5' % (save_file_name_prefix, curr_LIMS_id))
-    f = h5py.File(save_file_name, 'w')
-    write_dictionary_to_group(f, {'density':arr_density, 'injection':arr_injection})
-    f.close()
-    
+    injection_mhd = os.path.join(curr_dir, 'injection.mhd')
+    injection_info, injection_array = mhd.read(injection_mhd)
+
+    f_inj_vol[experiment_id] = injection_array
+
+f_proj.close()
+f_inj_vol.close()

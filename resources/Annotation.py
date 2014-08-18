@@ -19,47 +19,76 @@
 import h5py
 import numpy as np
 import os
+import mhd
+import paths
 
-class Annotation(np.ndarray):
-    
+class StructureAnnotation( np.ndarray ):
     def __new__(cls, input_array):
         obj = np.asarray(input_array).view(cls)
         return obj
 
+    def __init__(self, input_array):
+        super(StructureAnnotation, self).__init__(input_array)
+
+        self.center_index = int(self.shape[2] / 2)
+        self._coordinates = None
+        self._left_hemisphere = None
+        self._right_hemisphere = None
+
     def __array_finalize__(self, obj):
         if obj is None: return
 
-# Structure annotation:
-f = h5py.File(os.path.join(os.path.dirname(__file__), '../data/src/grid_annotation/gridAnnotation.hdf5'), 'r')
-structure_annotation = Annotation(f['grid_annotation'].value)
-f.close()
+    @staticmethod
+    def from_hdf5(file_name):
+        f = h5py.File(file_name, 'r')
+        a = f['grid_annotation'].value
+        f.close()
 
-# X-coordinates:
-XX = Annotation(np.zeros(np.shape(structure_annotation)))
-for ii in range(np.shape(structure_annotation)[0]):
-    XX[ii,:,:] = ii
-    
-# Y-coordinates:
-YY = Annotation(np.zeros(np.shape(structure_annotation)))
-for ii in range(np.shape(structure_annotation)[1]):
-    YY[:,ii,:] = ii
-    
-# Z-coordinates:
-ZZ = Annotation(np.zeros(np.shape(structure_annotation)))
-for ii in range(np.shape(structure_annotation)[2]):
-    ZZ[:,:,::] = ii
-    
-# Hemisphere annotation:
-center_ind = 57
-hemisphere_annotation = Annotation(np.zeros(np.shape(structure_annotation), dtype=str))
-for ii in np.arange(0,center_ind):
-    hemisphere_annotation[:,:,ii] = 'L'
-for ii in np.arange(center_ind+1,np.shape(structure_annotation)[2]):
-    hemisphere_annotation[:,:,ii] = 'R'
-hemisphere_annotation[:,:,center_ind] = 'R'
+        return StructureAnnotation(a)
 
-# All zero annotation:
-all_zero = Annotation(np.zeros(np.shape(structure_annotation)))
+    @staticmethod
+    def from_mhd(file_name):
+        info, values = mhd.read(file_name)
+        return StructureAnnotation(values)
 
+    @property
+    def coordinates(self):
+        if self._coordinates is None:
+            s = self.shape
+            self._coordinates = np.meshgrid(range(s[0]), range(s[1]), range(s[2]), indexing='ij')        
 
+        return self._coordinates
+
+    @property
+    def XX(self):
+        return self.coordinates[0]
+
+    @property
+    def YY(self):
+        return self.coordinates[1]
+
+    @property
+    def ZZ(self):
+        return self.coordinates[2]
+
+    @property
+    def left_hemisphere(self):
+        if self._left_hemisphere is None:
+            self._left_hemisphere = np.where(self.ZZ < self.center_index)
+
+        return self._left_hemisphere
+
+    @property
+    def right_hemisphere(self):
+        if self._right_hemisphere is None:
+            self._right_hemisphere = np.where(self.ZZ >= self.center_index)
+
+        return self._right_hemisphere
+
+if __name__ == "__main__":
+    file_name = paths.structure_annotation_file_name
+    annotation = StructureAnnotation.from_hdf5(file_name)
+
+    print annotation.hemisphere_annotation
+    print annotation.XX
     

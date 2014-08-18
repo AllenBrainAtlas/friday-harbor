@@ -18,16 +18,17 @@
 
 import h5py
 import numpy as np
-from resources.utilities import extract_volume
+import resources.mhd as mhd
+import resources.paths as paths
 import requests
 import os
 import zipfile
 import shutil
 
 # Settings:
-file_save_dir = '../src'
+file_save_dir = paths.data_dir
 grid_annotation_url = 'http://api.brain-map.org/api/v2/well_known_file_download/197676381'
-file_name = os.path.join(os.path.dirname(__file__), file_save_dir, 'grid_annotation.zip')
+file_name = os.path.join(file_save_dir, 'grid_annotation.zip')
 
 # Get data:
 with open(file_name,'wb') as handle:
@@ -39,7 +40,7 @@ with open(file_name,'wb') as handle:
 handle.close()
 
 # Unzip:
-unzip_path = os.path.join(os.path.dirname(__file__), file_save_dir, 'grid_annotation')
+unzip_path = os.path.join(file_save_dir, 'grid_annotation')
 shutil.rmtree(unzip_path, unzip_path)
 os.mkdir(unzip_path)
 zf = zipfile.ZipFile(file_name, 'r')
@@ -47,13 +48,9 @@ zf.extractall(unzip_path)
 zf.close()
 os.remove(file_name)
 
-# Settings:
-file_save_dir = '../src/grid_annotation'
-grid_annotation_file_name_prefix = 'gridAnnotation'
- 
-# Extract grid annotation:
-_, arr_grid_annotation, _ = extract_volume(file_save_dir, grid_annotation_file_name_prefix, dtype = np.uint32)
-save_file_name = os.path.join(file_save_dir, '%s.hdf5' % grid_annotation_file_name_prefix)
-f = h5py.File(save_file_name, 'w')
-f['grid_annotation'] = arr_grid_annotation
+mhd_path = os.path.join(file_save_dir, "grid_annotation", "gridAnnotation.mhd")
+annotation_info, annotation_values = mhd.read(mhd_path)
+
+f = h5py.File(paths.structure_annotation_file_name, "w")
+f['grid_annotation'] = annotation_values
 f.close()

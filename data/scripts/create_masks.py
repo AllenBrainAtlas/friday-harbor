@@ -20,93 +20,82 @@ import itertools
 import h5py
 import numpy as np
 from resources.Mask import Mask
-import resources.Annotation as Annotation
-import resources.Structure as Structure
-import resources.Experiment as Experiment
+from resources.Structure import Ontology
+from resources.Experiment import ExperimentManager
+from resources.Annotation import StructureAnnotation
+import resources.paths as paths
+
 import os
 
-# Save off the nonzero mask: 
-nonzero_ind_mask = Mask(np.where(Annotation.structure_annotation != 0))
-nonzero_ind_mask.write_to_hdf5('../src/nonzero_ind_mask.hdf5')
+structure_annotation = StructureAnnotation.from_hdf5(paths.structure_annotation_file_name)
+
+# Save off the brain mask: 
+brain_mask = Mask(np.where(structure_annotation != 0))
+brain_mask.write_to_hdf5(paths.brain_mask_file_name)
   
 # Save off the left hemisphere mask:
-left_hemisphere_mask = Mask(np.where(Annotation.hemisphere_annotation == 'L'))
-left_hemisphere_mask.write_to_hdf5('../src/left_hemisphere_mask.hdf5')
+left_hemisphere_mask = Mask(structure_annotation.left_hemisphere)
+left_hemisphere_mask.write_to_hdf5(paths.left_hemisphere_mask_file_name)
  
 # Save off the right hemisphere mask:
-right_hemisphere_mask = Mask(np.where(Annotation.hemisphere_annotation == 'R'))
-right_hemisphere_mask.write_to_hdf5('../src/right_hemisphere_mask.hdf5')
+right_hemisphere_mask = Mask(structure_annotation.right_hemisphere)
+right_hemisphere_mask.write_to_hdf5(paths.right_hemisphere_mask_file_name)
   
 # Save off the left hemisphere nonzero mask:
-left_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, left_hemisphere_mask)
-left_hemisphere_nonzero_ind_mask.write_to_hdf5('../src/left_hemisphere_nonzero_ind_mask.hdf5')
+left_hemisphere_nonzero_mask = Mask.intersection(brain_mask, left_hemisphere_mask)
+left_hemisphere_nonzero_mask.write_to_hdf5(paths.left_hemisphere_nonzero_mask_file_name)
  
 # Save off the right hemisphere nonzero mask:
-right_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, right_hemisphere_mask)
-right_hemisphere_nonzero_ind_mask.write_to_hdf5('../src/right_hemisphere_nonzero_ind_mask.hdf5')
+right_hemisphere_nonzero_mask = Mask.intersection(brain_mask, right_hemisphere_mask)
+right_hemisphere_nonzero_mask.write_to_hdf5(paths.right_hemisphere_nonzero_mask_file_name)
  
 # Create universe mask:
-universal_mask = Mask(np.where(Annotation.structure_annotation != np.nan))
-universal_mask.write_to_hdf5('../src/universal_mask.hdf5')
+universal_mask = Mask(np.where(structure_annotation != np.nan))
+universal_mask.write_to_hdf5(paths.universal_mask_file_name)
  
 # Create structure masks:
-f = h5py.File('../src/structure_masks.hdf5','w')
-for s in Structure.structure_list:
-          
+f = h5py.File(paths.structure_masks_file_name,'w')
+for s in Ontology():
+    print "creating structure masks for", s.structure_id
+
     # Whole region:
-    child_mask_list = [Mask(np.where(Annotation.structure_annotation == s_child.structure_id)) for s_child in s.child_list]
-    structure_mask=reduce(Mask.union, child_mask_list)
+    child_mask_list = [Mask(np.where(structure_annotation == s_child.structure_id)) for s_child in s.child_list]
+    structure_mask= Mask.union(*child_mask_list)
+
     structure_mask.write_to_hdf5_group(f, create_name='%s_nonzero' % s.acronym)
       
     # Left hemisphere:
-    structure_mask_nonzero_left = Mask.intersection(structure_mask, left_hemisphere_nonzero_ind_mask)
+    structure_mask_nonzero_left = Mask.intersection(structure_mask, left_hemisphere_nonzero_mask)
     structure_mask_nonzero_left.write_to_hdf5_group(f, create_name='%s_left_nonzero' % s.acronym)
       
     # Right hemisphere:
-    structure_mask_nonzero_right = Mask.intersection(structure_mask, right_hemisphere_nonzero_ind_mask)
+    structure_mask_nonzero_right = Mask.intersection(structure_mask, right_hemisphere_nonzero_mask)
     structure_mask_nonzero_right.write_to_hdf5_group(f, create_name='%s_right_nonzero' % s.acronym)
 f.close()
 
-# Create injection masks:
-f_inj = h5py.File('../src/injection_masks.hdf5', 'w')
-for e in Experiment.experiment_list:
-      
-    if os.path.isfile(e.data_file_name):
-        print e.id
-          
-        f_in = h5py.File(e.data_file_name, 'r')
-        injection_vals = f_in['injection'].value 
-        f_in.close()
+# Create injection masks (also with a shell):
+f_inj = h5py.File(paths.injection_masks_file_name, 'w')
+f_inj_shell = h5py.File(paths.injection_masks_shell_file_name, 'w')
+
+for e in ExperimentManager():
+    print "creating injection masks for", e.id
+    injection_vals = e.injection
+
+    injection_mask = Mask(np.where(injection_vals != 0))    
+    injection_mask.write_to_hdf5_group(f_inj, create_name=str(e.id))
+
+    for c_x, c_y, c_z in zip(*injection_mask.mask):
+        for x_i, y_i, z_i in itertools.product(c_x+np.array([-1,0,1]),
+                                               c_y+np.array([-1,0,1]),
+                                               c_z+np.array([-1,0,1])):
+            if 0<=x_i<np.shape(injection_vals)[0] and 0<=y_i<np.shape(injection_vals)[1] and 0<=z_i<np.shape(injection_vals)[2]: 
+                injection_vals[x_i, y_i, z_i] = 1
          
-        injection_mask = Mask(np.where(injection_vals != 0))    
-        injection_mask.write_to_hdf5_group(f_inj, create_name=str(e.id))
+    injection_mask_shell = Mask(np.where(injection_vals != 0))
+    injection_mask_shell.write_to_hdf5_group(f_inj_shell, create_name=str(e.id))
    
 f_inj.close()
-
-# Create injection masks with a shell:
-f_inj = h5py.File('../src/injection_masks_shell.hdf5', 'w')
-for e in Experiment.experiment_list:
-    
-    if os.path.isfile(e.data_file_name):
-        print e.id
-          
-        f_in = h5py.File(e.data_file_name, 'r')
-        injection_vals = f_in['injection'].value 
-        f_in.close()
-         
-        injection_mask = Mask(np.where(injection_vals != 0))
-        for c_x, c_y, c_z in zip(*injection_mask.mask):
-            for x_i, y_i, z_i in itertools.product(c_x+np.array([-1,0,1]),
-                                           c_y+np.array([-1,0,1]),
-                                           c_z+np.array([-1,0,1])):
-                if 0<=x_i<np.shape(injection_vals)[0] and 0<=y_i<np.shape(injection_vals)[1] and 0<=z_i<np.shape(injection_vals)[2]: 
-                    injection_vals[x_i, y_i, z_i] = 1
-         
-        injection_mask_shell = Mask(np.where(injection_vals != 0))
-         
-        injection_mask_shell.write_to_hdf5_group(f_inj, create_name=str(e.id))
-     
-f_inj.close()
+f_inj_shell.close()
 
 # # Create injection masks with a shell, from manuscript annotation:    
 # import scipy.io as sio
