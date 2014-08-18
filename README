@@ -18,8 +18,8 @@
 
 To get data:
 
-0) Add the directory containing this file to your python path
-1) run ./data/scripts/regenerate_data.sh
+$ cd /path/to/repo.git
+$ bash data/scripts/regenerate_data.sh
 
 Dependencies (python packages):
 	numpy/scipy
