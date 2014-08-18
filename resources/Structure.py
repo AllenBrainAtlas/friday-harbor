@@ -76,6 +76,9 @@ class Ontology(object):
     def structure_by_acronym(self, acronym):
         return self.acronym_structure_dict[acronym]
 
+    def __iter__(self):
+        return iter(self.structure_list)
+
 class Structure( object ):
     '''
     classdocs

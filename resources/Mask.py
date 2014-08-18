@@ -59,11 +59,27 @@ class Mask(object):
         return mask_obj
     
     @staticmethod
-    def intersection(m1, m2):
+    def intersection(*masks):
+        masks = [ m for m in masks if len(m) > 0 ]
+        
+        if len(masks) == 1:
+            return masks[0]
+
+        mask_bounds = [ [ np.max(coords) for coords in m.mask ] for m in masks ]
+        
+        max_bounds = np.max(mask_bounds, 0)
+                  
+        bg = np.zeros(max_bounds+1, dtype=np.uint8)
+  
+        bg[masks[0].mask] = 1
+
+        for mask in masks[1:]:
+            bg[mask.mask] &= 1
+
+        return Mask(np.where(bg > 0))
         
         if len(m1) == 0 or len(m2) == 0:
             xx, yy, zz = np.array([]), np.array([]), np.array([])
-            
         else:
             m1_set = set(zip(*m1.mask))
             m2_set = set(zip(*m2.mask))
@@ -77,21 +93,31 @@ class Mask(object):
         return Mask((np.array(xx), np.array(yy), np.array(zz)))
     
     @staticmethod
-    def union(m1, m2):
+    def union(*masks):
+        masks = [ m for m in masks if len(m) > 0 ]
         
-        if len(m1) == 0 and len(m2) == 0:
-            xx, yy, zz = np.array([]), np.array([]), np.array([])
-        elif len(m1) == 0:
-            return m2
-        elif len(m2) == 0:
-            return m1
-        else:
+        if len(masks) == 1:
+            return masks[0]
+
+        mask_bounds = [ [ np.max(coords) for coords in m.mask ] for m in masks ]
         
-            m1_set = set(zip(*m1.mask))
-            m2_set = set(zip(*m2.mask))
-            
-            union_set = m1_set.union(m2_set)
-            xx, yy, zz = zip(*list(union_set))
+        if len(mask_bounds) == 0:
+            return Mask((np.array([]), np.array([]), np.array([])))
+        
+        max_bounds = np.max(mask_bounds, 0)
+                  
+        bg = np.zeros(max_bounds+1, dtype=np.uint8)
+  
+        for mask in masks:
+            bg[mask.mask] = 1
+
+        return Mask(np.where(bg > 0))
+        
+        m1_set = set(zip(*m1.mask))
+        m2_set = set(zip(*m2.mask))
+        
+        union_set = m1_set.union(m2_set)
+        xx, yy, zz = zip(*list(union_set))
             
         return Mask((np.array(xx), np.array(yy), np.array(zz)))
     

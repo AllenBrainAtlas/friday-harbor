@@ -19,6 +19,7 @@
 import h5py
 import numpy as np
 import os
+import mhd
 
 class StructureAnnotation( np.ndarray ):
     def __new__(cls, input_array):
@@ -43,6 +44,11 @@ class StructureAnnotation( np.ndarray ):
         f.close()
 
         return StructureAnnotation(a)
+
+    @staticmethod
+    def from_mhd(file_name):
+        info, values = mhd.read(file_name)
+        return StructureAnnotation(values)
 
     @property
     def coordinates(self):

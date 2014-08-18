@@ -27,6 +27,8 @@ RAW_DATA_FILE_SAVE_DIR = os.path.join(os.path.dirname(__file__), '../data/src/ra
 JSON_FILE_NAME = 'experiment_data.json'
 INJECTION_MASK_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks.hdf5')
 INJECTION_MASK_FILE_NAME_SHELL = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks_shell.hdf5')
+PROJECTION_DENSITY_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/projection_density.hdf5')
+INJECTION_VOLUME_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/injection_volumes.hdf5')
 
 # Useful function:
 def read_dictionary_from_h5_group(group):
@@ -70,8 +72,6 @@ class Experiment(object):
         import_dict['structure_id'] = int(e_dict['structure-id'])
         import_dict['sum'] = float(e_dict['sum'])
         
-        import_dict['data_file_name'] = os.path.join(raw_data_dir, str(import_dict['id']),'density_energy_injection_%s.hdf5' % import_dict['id'])
-        
         if import_dict['strain'] == 'C57BL/6J':
             import_dict['wildtype'] = True 
         else:
@@ -79,46 +79,56 @@ class Experiment(object):
 
         return Experiment(**import_dict)
 
-        
     def __init__(self, **kwargs):
         '''
         Constructor
         '''
-        
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
-            
-    def load_hdf5(self, mask_obj=None):
         
-        f = h5py.File(self.data_file_name, 'r')
-        d = read_dictionary_from_h5_group(f)
+    @property
+    def injection(self, mask_obj=None):
+        f = h5py.File(INJECTION_VOLUME_FILE_NAME, 'r')
+        try:
+            vals = f[str(self.id)].value
+        except KeyError as e:
+            f.close()
+            raise e
+
         f.close()
-        
-        if mask_obj != None:
-            return {'injection':d['injection'][mask_obj.mask], 'density':d['density'][mask_obj.mask]}
+
+        if mask_obj:
+            return vals[mask_obj]
         else:
-            return d
+            return vals
+
+    @property
+    def density(self, mask_obj=None):
+        f = h5py.File(PROJECTION_DENSITY_FILE_NAME, 'r')
+
+        try:
+            vals = f[str(self.id)].value
+        except KeyError as e:
+            f.close()
+            raise e
+
+        f.close()
+
+        if mask_obj:
+            return vals[mask_obj]
+        else:
+            return vals
         
-    def get_injection(self):
-        return self.load_hdf5()['injection']
+    @property
+    def injection_mask(self, shell=False):
+        if shell:
+            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup=str(self.id))
+        else:
+            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME_SHELL, subgroup=str(self.id))
     
     @property
-    def mask(self):
-        return Experiment.get_injection_mask(self.id)
-        
-    @staticmethod
-    def get_injection_mask(experiment_id, shell=False):
-        
-        if shell == False:
-            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup=str(experiment_id))
-        elif shell == True:
-            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME_SHELL, subgroup=str(experiment_id))
-        else:
-            raise Exception
-    
-    @staticmethod
-    def get_injection_mask_inverse(experiment_id):
-        return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup='%s_inverse' % str(experiment_id))
+    def injection_mask_inverse(self):
+        return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup='%s_inverse' % str(self.id))
 
 class ExperimentManager( object ):
     def __init__(self, experiment_json_file_name=None, raw_data_dir=None):
@@ -142,9 +152,12 @@ class ExperimentManager( object ):
         return self.experiment_list
 
     def wildtype(self):
-        return [ e for e in experiment_list if e.wildtype == True ]
+        return ( e for e in experiment_list if e.wildtype == True )
+
+    def cre(self):
+        return ( e for e in experiment_list if e.wildtype == False )
         
-    def by_id(self, experiment_id):
+    def experiment_by_id(self, experiment_id):
         return self.experiments_by_id[experiment_id]
 
     def __iter__(self):

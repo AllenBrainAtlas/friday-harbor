@@ -18,7 +18,7 @@
 
 import h5py
 import numpy as np
-from resources.utilities import extract_volume
+import resources.mhd as mhd
 import requests
 import os
 import zipfile
@@ -47,13 +47,10 @@ zf.extractall(unzip_path)
 zf.close()
 os.remove(file_name)
 
-# Settings:
-file_save_dir = 'data/src/grid_annotation'
-grid_annotation_file_name_prefix = 'gridAnnotation'
- 
-# Extract grid annotation:
-_, arr_grid_annotation, _ = extract_volume(file_save_dir, grid_annotation_file_name_prefix, dtype = np.uint32)
-save_file_name = os.path.join(file_save_dir, '%s.hdf5' % grid_annotation_file_name_prefix)
-f = h5py.File(save_file_name, 'w')
-f['grid_annotation'] = arr_grid_annotation
+mhd_path = os.path.join(file_save_dir, "grid_annotation", "gridAnnotation.mhd")
+annotation_info, annotation_values = mhd.read(mhd_path)
+
+h5_path = os.path.join(file_save_dir, "grid_annotation.hdf5")
+f = h5py.File(h5_path, "w")
+f['grid_annotation'] = annotation_values
 f.close()

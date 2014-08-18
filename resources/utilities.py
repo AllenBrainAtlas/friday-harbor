@@ -21,6 +21,7 @@ import os
 import numpy as np
 import re
 import h5py
+import Experiment
 
 def pickle(data, file_name):
     
@@ -36,44 +37,14 @@ def unpickle(file_name):
     
     return data
 
-def extract_volume(load_dir, file_name_prefix, dtype):
+def get_density_from_experiment_id(experiment_id, zero_invalid_data=True):
+    m = ExperimentManager()
 
-    f = open(os.path.join(load_dir, file_name_prefix) + '.mhd', 'r')
-    header = f.read()
-    f.close()
-    f = open(os.path.join(load_dir, file_name_prefix) + '.raw', 'r')
-    raw = f.read()
-    f.close()
+    density_vals = m.experiment_by_id(experiment_id).density
 
-    arr = np.frombuffer(raw, dtype=dtype)
+    if zero_invalid_data:
+        density_vals[np.where(density_vals < 0)] = 0
 
-    # parse the meta image header.  each line should be a 'key = value' pair.
-    metaLines = header.split('\n')
-    metaInfo = dict(line.split(' = ') for line in metaLines if line)
-
-    # convert values to numeric types as appropriate
-    for k,v in metaInfo.iteritems():
-        if re.match("^[\d\s]+$",v):
-            nums = v.split(' ')
-            if len(nums) > 1:
-                metaInfo[k] = map(float, v.split(' '))
-            else:
-                metaInfo[k] = int(nums[0])
-
-    # reshape the array to the appropriate dimensions.  Note the use of the fortran column ordering.
-    arr = arr.reshape(metaInfo['DimSize'], order='F')
-    
-    return (header,arr,metaInfo)
-
-def get_density_from_LIMS_id(LIMS_id):
-    
-    # Create injection masks:
-    f_proj = h5py.File(os.path.join(os.path.dirname(__file__),'../data/src/projection_density.hdf5'), 'r')
-    density_vals = f_proj[str(LIMS_id)].value
-    f_proj.close()
-    
-    density_vals[np.where(density_vals < 0)] = 0
-    
     return density_vals
 
 def write_dictionary_to_group(group, dictionary, create_name = None):
