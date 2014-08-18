@@ -17,13 +17,14 @@
 # nicholasc@alleninstitute.org
 
 import h5py
-import resources.Experiment as Experiment 
+from resources.Experiment import ExperimentManager
 import os
 
-# Create injection masks:
-f_proj = h5py.File('../src/projection_density.hdf5', 'w')
-for e in Experiment.experiment_list:
-    
+exp_manager = ExperimentManager()
+
+# Create density maps:
+f_proj = h5py.File('data/src/projection_density.hdf5', 'w')
+for e in exp_manager:
     if os.path.isfile(e.data_file_name):
         f_in = h5py.File(e.data_file_name, 'r')
         density_vals = f_in['density'].value

@@ -48,11 +48,11 @@ echo "Extracting grid annotation"
 echo "    Done."
 
 echo "Creating masks"
-python data/scripts/create_masks.py
+#python data/scripts/create_masks.py
 echo "    Done."
 
 echo "Creating density matrix"
-#python data/scripts/create_density.py
+python data/scripts/create_density.py
 echo "    Done."
 
 
