@@ -26,11 +26,11 @@
 mkdir -p data/src
 
 echo "Refreshing structure information"
-#python data/scripts/refresh_structure_json.py
+python data/scripts/refresh_structure_json.py
 echo "    Done."
 
 echo "Refreshing experiment information"
-#python data/scripts/refresh_experiment_json.py
+python data/scripts/refresh_experiment_json.py
 echo "    Done."
 
 echo "Refreshing raw data"
@@ -39,16 +39,16 @@ echo "Refreshing raw data"
 echo "    Done."
 
 echo "Extracting experiments to hdf5"
-#python data/scripts/extract_experiment_to_hdf5.py
+python data/scripts/extract_experiment_to_hdf5.py
 echo "    Done."
 
 echo "Extracting grid annotation"
-#mkdir -p data/src/grid_annotation
-#python data/scripts/refresh_grid_annotation.py
+mkdir -p data/src/grid_annotation
+python data/scripts/refresh_grid_annotation.py
 echo "    Done."
 
 echo "Creating masks"
-#python data/scripts/create_masks.py
+python data/scripts/create_masks.py
 echo "    Done."
 
 

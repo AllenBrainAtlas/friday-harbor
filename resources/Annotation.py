@@ -20,6 +20,7 @@ import h5py
 import numpy as np
 import os
 import mhd
+import paths
 
 class StructureAnnotation( np.ndarray ):
     def __new__(cls, input_array):
@@ -38,7 +39,7 @@ class StructureAnnotation( np.ndarray ):
         if obj is None: return
 
     @staticmethod
-    def from_hdf5(file_name, *args, **kwargs):
+    def from_hdf5(file_name):
         f = h5py.File(file_name, 'r')
         a = f['grid_annotation'].value
         f.close()
@@ -85,8 +86,7 @@ class StructureAnnotation( np.ndarray ):
         return self._right_hemisphere
 
 if __name__ == "__main__":
-    file_name = os.path.join(os.path.dirname(__file__), '../data/src/grid_annotation/gridAnnotation.hdf5')
-
+    file_name = paths.structure_annotation_file_name
     annotation = StructureAnnotation.from_hdf5(file_name)
 
     print annotation.hemisphere_annotation

@@ -24,18 +24,14 @@ Created on Dec 6, 2012
 
 import os
 import json
-from resources.Mask import Mask
+from Mask import Mask
+import paths
 import h5py
-
-# Settings:
-JSON_FILE_SAVE_DIR = '../data/src'
-JSON_FILE_NAME = 'structure_data.json'
-STRUCTURE_MASK_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/structure_masks.hdf5')
 
 class Ontology(object):
     def __init__(self, file_name=None):
         if file_name is None:
-            file_name = os.path.join(os.path.dirname(__file__), JSON_FILE_SAVE_DIR, JSON_FILE_NAME)
+            file_name = paths.structure_json_file_name
 
         # Get data:
         self.structure_list = []
@@ -60,15 +56,15 @@ class Ontology(object):
 
     def get_mask_from_id_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(STRUCTURE_MASK_FILE_NAME, '%s_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_nonzero' % curr_acronym)
     
     def get_mask_from_id_right_hemisphere_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(STRUCTURE_MASK_FILE_NAME, '%s_right_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_right_nonzero' % curr_acronym)
     
     def get_mask_from_id_left_hemisphere_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(STRUCTURE_MASK_FILE_NAME, '%s_left_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_left_nonzero' % curr_acronym)
 
     def structure_by_id(self, structure_id):
         return self.id_structure_dict[structure_id]
@@ -89,10 +85,7 @@ class Structure( object ):
         import_dict = {}
     
         import_dict['structure_id'] = int(region_dict['id'])
-        acronym = str(region_dict['acronym'])
-        # Damn 'SUM ' typo:
-        if acronym == 'SUM ':
-            acronym = 'SUM'
+        acronym = str(region_dict['acronym']).strip()
         import_dict['acronym'] = acronym
         import_dict['graph_order'] = int(region_dict['graph_order'])
         import_dict['rgb'] = hex_to_rgb(region_dict['color_hex_triplet'])

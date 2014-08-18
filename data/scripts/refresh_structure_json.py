@@ -19,6 +19,7 @@
 import json
 import requests
 import os
+import resources.paths as paths
 
 # Settings:
 json_file_save_dir = 'data/src'
@@ -29,9 +30,9 @@ anatomical_structure_info_url = 'http://api.brain-map.org/api/v2/data/Structure/
 raw_json = requests.request('get', anatomical_structure_info_url).json()
 
 # Write 
-f = open(os.path.join(json_file_save_dir, json_file_name),'wb')
-json.dump(raw_json, f)
-f.close()
+with open(paths.structure_json_file_name, 'wb') as f:
+    json.dump(raw_json, f)
+
 
 
 

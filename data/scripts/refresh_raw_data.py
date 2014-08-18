@@ -21,18 +21,18 @@ import os
 import zipfile
 import shutil
 from resources.Experiment import ExperimentManager
+import resources.paths as paths
 
 # Settings:
-file_save_dir = 'data/src/raw_data'
 exp_manager = ExperimentManager()
+exp_info_url_pattern = 'http://api.brain-map.org/grid_data/download/%s?include=density,injection'
 
 # Get list of experiments:
 
 for experiment in exp_manager:
-
     # Initializations:
-    file_name = os.path.join(file_save_dir, 'experiment_%s.zip' % experiment.id)
-    experiment_info_url = 'http://api.brain-map.org/grid_data/download/%s?include=density,injection' % experiment.id
+    file_name = os.path.join(paths.experiment_raw_data_directory, 'experiment_%s.zip' % experiment.id)
+    experiment_info_url =  exp_info_url_pattern % experiment.id
     
     # Get data:
     with open(file_name,'wb') as handle:
@@ -44,7 +44,7 @@ for experiment in exp_manager:
     handle.close()
 
     # Unzip:
-    unzip_path = os.path.join(file_save_dir, '%s' % experiment.id)
+    unzip_path = os.path.join(paths.experiment_raw_data_directory, '%s' % experiment.id)
     shutil.rmtree(unzip_path, unzip_path)
     os.mkdir(unzip_path)
     zf = zipfile.ZipFile(file_name, 'r')

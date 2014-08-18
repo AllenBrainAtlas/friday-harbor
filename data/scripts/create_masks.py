@@ -23,38 +23,38 @@ from resources.Mask import Mask
 from resources.Structure import Ontology
 from resources.Experiment import ExperimentManager
 from resources.Annotation import StructureAnnotation
+import resources.paths as paths
 
 import os
 
-structure_annotation_file = 'data/src/grid_annotation.hdf5'
-structure_annotation = StructureAnnotation.from_hdf5(structure_annotation_file)
+structure_annotation = StructureAnnotation.from_hdf5(paths.structure_annotation_file_name)
 
-# Save off the nonzero mask: 
-nonzero_ind_mask = Mask(np.where(structure_annotation != 0))
-nonzero_ind_mask.write_to_hdf5('data/src/nonzero_ind_mask.hdf5')
+# Save off the brain mask: 
+brain_mask = Mask(np.where(structure_annotation != 0))
+brain_mask.write_to_hdf5(paths.brain_mask_file_name)
   
 # Save off the left hemisphere mask:
 left_hemisphere_mask = Mask(structure_annotation.left_hemisphere)
-left_hemisphere_mask.write_to_hdf5('data/src/left_hemisphere_mask.hdf5')
+left_hemisphere_mask.write_to_hdf5(paths.left_hemisphere_mask_file_name)
  
 # Save off the right hemisphere mask:
 right_hemisphere_mask = Mask(structure_annotation.right_hemisphere)
-right_hemisphere_mask.write_to_hdf5('data/src/right_hemisphere_mask.hdf5')
+right_hemisphere_mask.write_to_hdf5(paths.right_hemisphere_mask_file_name)
   
 # Save off the left hemisphere nonzero mask:
-left_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, left_hemisphere_mask)
-left_hemisphere_nonzero_ind_mask.write_to_hdf5('data/src/left_hemisphere_nonzero_ind_mask.hdf5')
+left_hemisphere_nonzero_mask = Mask.intersection(brain_mask, left_hemisphere_mask)
+left_hemisphere_nonzero_mask.write_to_hdf5(paths.left_hemisphere_nonzero_mask_file_name)
  
 # Save off the right hemisphere nonzero mask:
-right_hemisphere_nonzero_ind_mask = Mask.intersection(nonzero_ind_mask, right_hemisphere_mask)
-right_hemisphere_nonzero_ind_mask.write_to_hdf5('data/src/right_hemisphere_nonzero_ind_mask.hdf5')
+right_hemisphere_nonzero_mask = Mask.intersection(brain_mask, right_hemisphere_mask)
+right_hemisphere_nonzero_mask.write_to_hdf5(paths.right_hemisphere_nonzero_mask_file_name)
  
 # Create universe mask:
 universal_mask = Mask(np.where(structure_annotation != np.nan))
-universal_mask.write_to_hdf5('data/src/universal_mask.hdf5')
+universal_mask.write_to_hdf5(paths.universal_mask_file_name)
  
 # Create structure masks:
-f = h5py.File('data/src/structure_masks.hdf5','w')
+f = h5py.File(paths.structure_masks_file_name,'w')
 for s in Ontology():
     print "creating structure masks for", s.structure_id
 
@@ -65,17 +65,17 @@ for s in Ontology():
     structure_mask.write_to_hdf5_group(f, create_name='%s_nonzero' % s.acronym)
       
     # Left hemisphere:
-    structure_mask_nonzero_left = Mask.intersection(structure_mask, left_hemisphere_nonzero_ind_mask)
+    structure_mask_nonzero_left = Mask.intersection(structure_mask, left_hemisphere_nonzero_mask)
     structure_mask_nonzero_left.write_to_hdf5_group(f, create_name='%s_left_nonzero' % s.acronym)
       
     # Right hemisphere:
-    structure_mask_nonzero_right = Mask.intersection(structure_mask, right_hemisphere_nonzero_ind_mask)
+    structure_mask_nonzero_right = Mask.intersection(structure_mask, right_hemisphere_nonzero_mask)
     structure_mask_nonzero_right.write_to_hdf5_group(f, create_name='%s_right_nonzero' % s.acronym)
 f.close()
 
 # Create injection masks (also with a shell):
-f_inj = h5py.File('data/src/injection_masks.hdf5', 'w')
-f_inj_shell = h5py.File('data/src/injection_masks_shell.hdf5', 'w')
+f_inj = h5py.File(paths.injection_masks_file_name, 'w')
+f_inj_shell = h5py.File(paths.injection_masks_shell_file_name, 'w')
 
 for e in ExperimentManager():
     print "creating injection masks for", e.id

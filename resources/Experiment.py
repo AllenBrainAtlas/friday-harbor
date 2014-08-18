@@ -20,15 +20,7 @@ import os
 import json
 import h5py
 from resources.Mask import Mask 
-
-# Settings:
-JSON_FILE_SAVE_DIR = os.path.join(os.path.dirname(__file__), '../data/src')
-RAW_DATA_FILE_SAVE_DIR = os.path.join(os.path.dirname(__file__), '../data/src/raw_data')
-JSON_FILE_NAME = 'experiment_data.json'
-INJECTION_MASK_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks.hdf5')
-INJECTION_MASK_FILE_NAME_SHELL = os.path.join(os.path.dirname(__file__), '../data/src/injection_masks_shell.hdf5')
-PROJECTION_DENSITY_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/projection_density.hdf5')
-INJECTION_VOLUME_FILE_NAME = os.path.join(os.path.dirname(__file__), '../data/src/injection_volumes.hdf5')
+import resources.paths as paths
 
 # Useful function:
 def read_dictionary_from_h5_group(group):
@@ -88,7 +80,7 @@ class Experiment(object):
         
     @property
     def injection(self, mask_obj=None):
-        f = h5py.File(INJECTION_VOLUME_FILE_NAME, 'r')
+        f = h5py.File(paths.injection_volumes_file_name, 'r')
         try:
             vals = f[str(self.id)].value
         except KeyError as e:
@@ -104,7 +96,7 @@ class Experiment(object):
 
     @property
     def density(self, mask_obj=None):
-        f = h5py.File(PROJECTION_DENSITY_FILE_NAME, 'r')
+        f = h5py.File(paths.injection_densities_file_name, 'r')
 
         try:
             vals = f[str(self.id)].value
@@ -122,21 +114,21 @@ class Experiment(object):
     @property
     def injection_mask(self, shell=False):
         if shell:
-            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup=str(self.id))
+            return Mask.read_from_hdf5(paths.injection_masks_file_name, subgroup=str(self.id))
         else:
-            return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME_SHELL, subgroup=str(self.id))
+            return Mask.read_from_hdf5(paths.injection_masks_shell_file_name, subgroup=str(self.id))
     
     @property
     def injection_mask_inverse(self):
-        return Mask.read_from_hdf5(INJECTION_MASK_FILE_NAME, subgroup='%s_inverse' % str(self.id))
+        return Mask.read_from_hdf5(paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
 
 class ExperimentManager( object ):
     def __init__(self, experiment_json_file_name=None, raw_data_dir=None):
         if experiment_json_file_name is None:
-            experiment_json_file_name = os.path.join(os.path.dirname(__file__), JSON_FILE_SAVE_DIR, JSON_FILE_NAME)
+            experiment_json_file_name = paths.experiment_json_file_name
 
         if raw_data_dir is None:
-            raw_data_dir = RAW_DATA_FILE_SAVE_DIR
+            raw_data_dir = paths.experiment_raw_data_directory
             
         self.experiment_list = []
 

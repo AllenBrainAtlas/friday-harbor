@@ -19,13 +19,14 @@
 import h5py
 import numpy as np
 import resources.mhd as mhd
+import resources.paths as paths
 import requests
 import os
 import zipfile
 import shutil
 
 # Settings:
-file_save_dir = 'data/src'
+file_save_dir = paths.data_dir
 grid_annotation_url = 'http://api.brain-map.org/api/v2/well_known_file_download/197676381'
 file_name = os.path.join(file_save_dir, 'grid_annotation.zip')
 
@@ -50,7 +51,6 @@ os.remove(file_name)
 mhd_path = os.path.join(file_save_dir, "grid_annotation", "gridAnnotation.mhd")
 annotation_info, annotation_values = mhd.read(mhd_path)
 
-h5_path = os.path.join(file_save_dir, "grid_annotation.hdf5")
-f = h5py.File(h5_path, "w")
+f = h5py.File(paths.structure_annotation_file_name, "w")
 f['grid_annotation'] = annotation_values
 f.close()
