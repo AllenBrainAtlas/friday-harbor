@@ -19,18 +19,27 @@
 import json
 import requests
 import os
-import friday_harbor.paths as paths
+import sys
+from friday_harbor.paths import Paths
 
-# Settings:
-experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'
+def refresh_experiment_json(data_dir=None):
+    paths = Paths(data_dir)
 
-# Get data:
-raw_json = requests.request('get', experiment_info_url).json()
+    experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'
+        
+    # Get data:
+    raw_json = requests.request('get', experiment_info_url).json()
+    
+    # Write 
+    with open(paths.experiment_json_file_name,'wb') as f:
+        json.dump(raw_json, f)
 
-# Write 
-f = open(paths.experiment_json_file_name,'wb')
-json.dump(raw_json, f)
-f.close()
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        refresh_experiment_json(sys.argv[1])
+    else:
+        refresh_experiment_json()
+    
 
 
 

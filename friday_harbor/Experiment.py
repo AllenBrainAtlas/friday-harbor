@@ -20,7 +20,7 @@ import os
 import json
 import h5py
 from friday_harbor.Mask import Mask 
-import friday_harbor.paths as paths
+from friday_harbor.paths import Paths
 
 # Useful function:
 def read_dictionary_from_h5_group(group):
@@ -36,7 +36,7 @@ class Experiment(object):
     '''
 
     @staticmethod
-    def from_json(e_dict, raw_data_dir):
+    def from_json(e_dict, paths):
         import_dict = {}
         import_dict['num_voxels'] = int(e_dict['num-voxels'])
         import_dict['name'] = str(e_dict['name'])
@@ -69,18 +69,20 @@ class Experiment(object):
         else:
             import_dict['wildtype'] = False
 
-        return Experiment(**import_dict)
+        return Experiment(paths, **import_dict)
 
-    def __init__(self, **kwargs):
+    def __init__(self, paths, **kwargs):
         '''
         Constructor
         '''
+        self.paths = paths
+
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
         
     @property
     def injection(self, mask_obj=None):
-        f = h5py.File(paths.injection_volumes_file_name, 'r')
+        f = h5py.File(self.paths.injection_volumes_file_name, 'r')
         try:
             vals = f[str(self.id)].value
         except KeyError as e:
@@ -96,7 +98,7 @@ class Experiment(object):
 
     @property
     def density(self, mask_obj=None):
-        f = h5py.File(paths.injection_densities_file_name, 'r')
+        f = h5py.File(self.paths.injection_densities_file_name, 'r')
 
         try:
             vals = f[str(self.id)].value
@@ -114,21 +116,20 @@ class Experiment(object):
     @property
     def injection_mask(self, shell=False):
         if shell:
-            return Mask.read_from_hdf5(paths.injection_masks_file_name, subgroup=str(self.id))
+            return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup=str(self.id))
         else:
-            return Mask.read_from_hdf5(paths.injection_masks_shell_file_name, subgroup=str(self.id))
+            return Mask.read_from_hdf5(self.paths.injection_masks_shell_file_name, subgroup=str(self.id))
     
     @property
     def injection_mask_inverse(self):
-        return Mask.read_from_hdf5(paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
+        return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
 
 class ExperimentManager( object ):
-    def __init__(self, experiment_json_file_name=None, raw_data_dir=None):
-        if experiment_json_file_name is None:
-            experiment_json_file_name = paths.experiment_json_file_name
+    def __init__(self, data_dir=None):
 
-        if raw_data_dir is None:
-            raw_data_dir = paths.experiment_raw_data_directory
+        self.paths = Paths(data_dir)
+        experiment_json_file_name = self.paths.experiment_json_file_name
+        raw_data_dir = self.paths.experiment_raw_data_directory
             
         self.experiment_list = []
 
@@ -136,7 +137,7 @@ class ExperimentManager( object ):
         with open(experiment_json_file_name) as f:
             raw_json = json.load(f)
 
-            self.experiment_list = [ Experiment.from_json(d, raw_data_dir) for d in raw_json['msg'] ]
+            self.experiment_list = [ Experiment.from_json(d, self.paths) for d in raw_json['msg'] ]
 
         self.experiments_by_id = { e.id: e for e in self.experiment_list }
 

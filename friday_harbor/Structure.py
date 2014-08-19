@@ -25,13 +25,14 @@ Created on Dec 6, 2012
 import os
 import json
 from friday_harbor.Mask import Mask
+from friday_harbor.paths import Paths
 import paths
 import h5py
 
 class Ontology(object):
-    def __init__(self, file_name=None):
-        if file_name is None:
-            file_name = paths.structure_json_file_name
+    def __init__(self, data_dir=None):
+        self.paths = Paths(data_dir)
+        file_name = self.paths.structure_json_file_name
 
         # Get data:
         self.structure_list = []
@@ -56,15 +57,15 @@ class Ontology(object):
 
     def get_mask_from_id_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_nonzero' % curr_acronym)
     
     def get_mask_from_id_right_hemisphere_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_right_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_right_nonzero' % curr_acronym)
     
     def get_mask_from_id_left_hemisphere_nonzero(self, structure_id):
         curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(paths.structure_masks_file_name, '%s_left_nonzero' % curr_acronym)
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_left_nonzero' % curr_acronym)
 
     def structure_by_id(self, structure_id):
         return self.id_structure_dict[structure_id]
