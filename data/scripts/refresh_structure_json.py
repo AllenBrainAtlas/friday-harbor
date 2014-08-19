@@ -19,7 +19,7 @@
 import json
 import requests
 import os
-import resources.paths as paths
+import friday_harbor.paths as paths
 
 # Settings:
 json_file_save_dir = 'data/src'

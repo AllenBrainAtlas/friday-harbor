@@ -19,11 +19,11 @@
 import itertools
 import h5py
 import numpy as np
-from resources.Mask import Mask
-from resources.Structure import Ontology
-from resources.Experiment import ExperimentManager
-from resources.Annotation import StructureAnnotation
-import resources.paths as paths
+from friday_harbor.Mask import Mask
+from friday_harbor.Structure import Ontology
+from friday_harbor.Experiment import ExperimentManager
+from friday_harbor.Annotation import StructureAnnotation
+import friday_harbor.paths as paths
 
 import os
 

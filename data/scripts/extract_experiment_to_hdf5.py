@@ -19,9 +19,9 @@
 import h5py
 import os
 import numpy as np
-from resources import mhd 
-from resources.Mask import Mask
-from resources.utilities import write_dictionary_to_group
+from friday_harbor import mhd 
+from friday_harbor.Mask import Mask
+from friday_harbor.utilities import write_dictionary_to_group
 
 # Settings:
 raw_data_dir = 'data/src/raw_data'

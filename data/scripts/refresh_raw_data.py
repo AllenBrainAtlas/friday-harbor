@@ -20,8 +20,8 @@ import requests
 import os
 import zipfile
 import shutil
-from resources.Experiment import ExperimentManager
-import resources.paths as paths
+from friday_harbor.Experiment import ExperimentManager
+import friday_harbor.paths as paths
 
 # Settings:
 exp_manager = ExperimentManager()

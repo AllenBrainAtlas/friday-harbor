@@ -18,7 +18,6 @@
 
 import os
 import numpy as np
-import resources.Annotation as Annotation
 import h5py
 
 class Mask(object):

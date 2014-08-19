@@ -19,8 +19,8 @@
 import os
 import json
 import h5py
-from resources.Mask import Mask 
-import resources.paths as paths
+from friday_harbor.Mask import Mask 
+import friday_harbor.paths as paths
 
 # Useful function:
 def read_dictionary_from_h5_group(group):

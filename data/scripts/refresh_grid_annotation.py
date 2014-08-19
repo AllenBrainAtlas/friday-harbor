@@ -18,8 +18,8 @@
 
 import h5py
 import numpy as np
-import resources.mhd as mhd
-import resources.paths as paths
+import friday_harbor.mhd as mhd
+import friday_harbor.paths as paths
 import requests
 import os
 import zipfile

@@ -19,7 +19,7 @@
 import json
 import requests
 import os
-import resources.paths as paths
+import friday_harbor.paths as paths
 
 # Settings:
 experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'

@@ -19,8 +19,8 @@
 import h5py
 import numpy as np
 import os
-import mhd
-import paths
+import friday_harbor.mhd as mhd
+import friday_harbor.paths as paths
 
 class StructureAnnotation( np.ndarray ):
     def __new__(cls, input_array):
