@@ -22,9 +22,9 @@ $ cd /path/to/repo.git
 $ bash data/scripts/regenerate_data.sh
 $ ls data/src/ # data is stored here
 
-To use the library once you have the data downloaded:
+To use the library once you have the data downloaded, add it to your python path:
 
-$ export PYTHONPATH=/path/to/repo.git:$PYTHONPATH
+$ export PYTHONPATH=/path/to/friday_harbor.git:$PYTHONPATH
 $ python
 >> from friday_harbor.Experiment import ExperimentManager
 >> experiment_manager = ExperimentManager()
