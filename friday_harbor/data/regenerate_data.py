@@ -8,16 +8,16 @@ from friday_harbor.data.create_masks import create_masks
 
 def regenerate_data(data_dir='.'):
     print "refreshing structure json"
-    #refresh_structure_json(data_dir)
+    refresh_structure_json(data_dir)
 
     print "refreshing experiment json"
-    #refresh_experiment_json(data_dir)
+    refresh_experiment_json(data_dir)
 
     print "refreshing raw data"
-    #refresh_raw_data(data_dir)
+    refresh_raw_data(data_dir)
 
     print "extracting raw data to hdf5"
-    #extract_experiment_to_hdf5(data_dir)
+    extract_experiment_to_hdf5(data_dir)
 
     print "refreshing grid annotation"
     refresh_grid_annotation(data_dir)
