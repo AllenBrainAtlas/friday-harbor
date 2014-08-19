@@ -29,7 +29,7 @@ from friday_harbor.paths import Paths
 def extract_experiment_to_hdf5(data_dir=None):
     paths = Paths(data_dir)
 
-    raw_data_dir = paths.experiment_raw_data_dir
+    raw_data_dir = paths.experiment_raw_data_directory
 
     # Settings:
     f_proj = h5py.File(paths.projection_densities_file_name, 'w')
