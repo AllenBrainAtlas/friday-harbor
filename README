@@ -16,10 +16,20 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-To get data:
+To get data (warning, this takes a long time):
 
 $ cd /path/to/repo.git
 $ bash data/scripts/regenerate_data.sh
+$ ls data/src/ # data is stored here
+
+To use the library once you have the data downloaded:
+
+$ export PYTHONPATH=/path/to/repo.git:$PYTHONPATH
+$ python
+>> from friday_harbor.Experiment import ExperimentManager
+>> experiment_manager = ExperimentManager()
+>> for experiment in experiment_manager:
+>>     ...
 
 Dependencies (python packages):
 	numpy/scipy
