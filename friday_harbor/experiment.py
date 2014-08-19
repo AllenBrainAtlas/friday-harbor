@@ -19,7 +19,7 @@
 import os
 import json
 import h5py
-from friday_harbor.Mask import Mask 
+from friday_harbor.mask import Mask 
 from friday_harbor.paths import Paths
 
 # Useful function:

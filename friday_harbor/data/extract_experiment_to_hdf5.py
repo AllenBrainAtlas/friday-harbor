@@ -22,11 +22,11 @@ import sys
 import numpy as np
 
 from friday_harbor import mhd 
-from friday_harbor.Mask import Mask
+from friday_harbor.mask import Mask
 from friday_harbor.utilities import write_dictionary_to_group
 from friday_harbor.paths import Paths
 
-def extract_experiment_to_hdf5(data_dir=None):
+def extract_experiment_to_hdf5(data_dir='.'):
     paths = Paths(data_dir)
 
     raw_data_dir = paths.experiment_raw_data_directory

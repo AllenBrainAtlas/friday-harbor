@@ -22,7 +22,7 @@ import os
 import sys
 from friday_harbor.paths import Paths
 
-def refresh_experiment_json(data_dir=None):
+def refresh_experiment_json(data_dir='.'):
     paths = Paths(data_dir)
 
     experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'

@@ -1,11 +1,8 @@
 import os
 
 class Paths( object ):
-    def __init__(self, data_dir=None):
-        if data_dir is None:
-            self.data_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), 'data/src'))
-        else:
-            self.data_dir = data_dir
+    def __init__(self, data_dir='.'):
+        self.data_dir = data_dir
         
         self.experiment_raw_data_directory = os.path.normpath(os.path.join(self.data_dir, 'raw_data'))
         

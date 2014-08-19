@@ -24,7 +24,7 @@ Created on Dec 6, 2012
 
 import os
 import json
-from friday_harbor.Mask import Mask
+from friday_harbor.mask import Mask
 from friday_harbor.paths import Paths
 import paths
 import h5py

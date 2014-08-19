@@ -6,7 +6,7 @@ from friday_harbor.data.extract_experiment_to_hdf5 import extract_experiment_to_
 from friday_harbor.data.refresh_grid_annotation import refresh_grid_annotation
 from friday_harbor.data.create_masks import create_masks
 
-def regenerate_data(data_dir=None):
+def regenerate_data(data_dir='.'):
     print "refreshing structure json"
     refresh_structure_json(data_dir)
 

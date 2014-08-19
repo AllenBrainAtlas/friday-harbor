@@ -21,14 +21,14 @@ import os
 import itertools
 import h5py
 import numpy as np
-from friday_harbor.Mask import Mask
-from friday_harbor.Structure import Ontology
-from friday_harbor.Experiment import ExperimentManager
-from friday_harbor.Annotation import StructureAnnotation
+from friday_harbor.mask import Mask
+from friday_harbor.structure import Ontology
+from friday_harbor.experiment import ExperimentManager
+from friday_harbor.annotation import StructureAnnotation
 from friday_harbor.paths import Paths
 
 
-def create_masks(data_dir=None):
+def create_masks(data_dir='.'):
     paths = Paths(data_dir)
 
     structure_annotation = StructureAnnotation.from_hdf5(paths.structure_annotation_file_name)
