@@ -19,19 +19,28 @@
 import json
 import requests
 import os
-import resources.paths as paths
+import sys
+from friday_harbor.paths import Paths
 
-# Settings:
-json_file_save_dir = 'data/src'
-json_file_name = 'structure_data.json'
-anatomical_structure_info_url = 'http://api.brain-map.org/api/v2/data/Structure/query.json?criteria=[graph_id$eq1]&order=structures.graph_order&tabular=structures.id,structures.acronym,structures.graph_order,structures.color_hex_triplet,structures.structure_id_path,structures.name&start_row=0&num_rows=all'
+def refresh_experiment_json(data_dir=None):
+    paths = Paths(data_dir)
 
-# Get data:
-raw_json = requests.request('get', anatomical_structure_info_url).json()
+    experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'
+        
+    # Get data:
+    raw_json = requests.request('get', experiment_info_url).json()
+    
+    # Write 
+    with open(paths.experiment_json_file_name,'wb') as f:
+        json.dump(raw_json, f)
 
-# Write 
-with open(paths.structure_json_file_name, 'wb') as f:
-    json.dump(raw_json, f)
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        refresh_experiment_json(sys.argv[1])
+    else:
+        refresh_experiment_json()
+    
+
 
 
 
