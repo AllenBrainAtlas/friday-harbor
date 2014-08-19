@@ -28,7 +28,7 @@ from friday_harbor.annotation import StructureAnnotation
 from friday_harbor.paths import Paths
 
 
-def create_masks(data_dir=None):
+def create_masks(data_dir='.'):
     paths = Paths(data_dir)
 
     structure_annotation = StructureAnnotation.from_hdf5(paths.structure_annotation_file_name)

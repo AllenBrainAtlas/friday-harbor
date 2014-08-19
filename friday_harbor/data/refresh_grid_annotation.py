@@ -25,7 +25,7 @@ import os
 import zipfile
 import shutil
 
-def refresh_grid_annotation(data_dir=None):
+def refresh_grid_annotation(data_dir='.'):
     paths = Paths(data_dir)
 
     # Settings:

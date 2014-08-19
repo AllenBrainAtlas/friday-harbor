@@ -25,7 +25,7 @@ from friday_harbor.experiment import ExperimentManager
 from friday_harbor.paths import Paths
 
 
-def refresh_raw_data(data_dir=None):
+def refresh_raw_data(data_dir='.'):
     paths = Paths(data_dir)
 
     # Settings:

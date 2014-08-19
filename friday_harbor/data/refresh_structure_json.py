@@ -22,7 +22,7 @@ import os
 import sys
 from friday_harbor.paths import Paths
 
-def refresh_structure_json(data_dir=None):
+def refresh_structure_json(data_dir='.'):
     paths = Paths(data_dir)
     
     anatomical_structure_info_url = 'http://api.brain-map.org/api/v2/data/Structure/query.json?criteria=[graph_id$eq1]&order=structures.graph_order&tabular=structures.id,structures.acronym,structures.graph_order,structures.color_hex_triplet,structures.structure_id_path,structures.name&start_row=0&num_rows=all'
