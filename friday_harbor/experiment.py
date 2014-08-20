@@ -106,7 +106,7 @@ class Experiment(object):
     @property
     def density(self, mask_obj=None):
         ''' Extract the density volume voxel data from the hdf5 file if it exists. '''
-        f = h5py.File(self.paths.injection_densities_file_name, 'r')
+        f = h5py.File(self.paths.projection_densities_file_name, 'r')
 
         try:
             vals = f[str(self.id)].value
@@ -169,6 +169,14 @@ class ExperimentManager( object ):
     def cre(self):
         ''' Return a generator for just the cre experiments. '''
         return ( e for e in experiment_list if e.wildtype == False )
+
+    def cortex(self):
+        ''' Return a generator for just the cortical injections. '''
+        return ( e for e in experiment_list if 315 in e.path_to_root )
+
+    def noncortex(self):
+        ''' Return a generator for just the cortical injections. '''
+        return ( e for e in experiment_list if not (315 in e.path_to_root) )
         
     def experiment_by_id(self, experiment_id):
         ''' Get a handle to an experiment by its id. '''
