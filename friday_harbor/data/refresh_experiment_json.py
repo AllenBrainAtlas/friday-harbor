@@ -22,10 +22,23 @@ import os
 import sys
 from friday_harbor.paths import Paths
 
-def refresh_experiment_json(data_dir='.'):
+def refresh_experiment_json(data_dir='.', injection_structures=None, wild_only=False):
+
+    # default value for injection structures is gray (structure id 8)
+    if injection_structures is None:
+        injection_structures = [8]
+
     paths = Paths(data_dir)
 
-    experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?criteria=service::mouse_connectivity_injection_structure[injection_domain$eqgrey][num_rows$eq3000][primary_structure_only$eqtrue][injection_structures$eqgrey]'
+    injection_structures = ','.join([str(i) for i in injection_structures])
+    experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?' + \
+                          'criteria=service::mouse_connectivity_injection_structure[num_rows$eq3000]' + \
+                          '[primary_structure_only$eqtrue]' + \
+                          '[injection_structures$eq'+injection_structures+']'
+
+    # if we are restricted to wild type experiments only, add that filter to the query (id for wild = 0)
+    if wild_only:
+        experiment_info_url += '[transgenic_lines$eq0]'
         
     # Get data:
     raw_json = requests.request('get', experiment_info_url).json()
