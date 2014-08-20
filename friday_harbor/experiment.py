@@ -22,21 +22,21 @@ import h5py
 from friday_harbor.mask import Mask 
 from friday_harbor.paths import Paths
 
-# Useful function:
-def read_dictionary_from_h5_group(group):
-    dictionary = {}
-    for name in group:
-        dictionary[str(name)] = group[name].value
-        
-    return dictionary
-
 class Experiment(object):
     '''
-    classdocs
+    Experiment imports metadata from a data downloaded from the Allen Institute API
+    and provides support methods for extracting density, injection, and other 
+    arrays from hdf5 files downloaded via friday_harbor.data scripts.
+    
     '''
 
     @staticmethod
     def from_json(e_dict, paths):
+        '''
+        Take a dictionary, which is expected to contain the fields resulting from
+        a json import of API-downloaded experiment metadata, sanitize the keys and 
+        data types, and create an Experiment instance.
+        '''
         import_dict = {}
         import_dict['num_voxels'] = int(e_dict['num-voxels'])
         import_dict['name'] = str(e_dict['name'])
@@ -73,7 +73,13 @@ class Experiment(object):
 
     def __init__(self, paths, **kwargs):
         '''
-        Constructor
+        A fairly generic Experiment constructor.  The Experiment needs a 
+        friday_harbor.paths.Paths instance so it knows where the relevant 
+        hdf5 files live.  
+        The rest of the properties of the experiment are initialized from keyword 
+        arguments.  Note that this can be rather dangerous, since it's
+        easy for property names to accidentally collide.
+        
         '''
         self.paths = paths
 
@@ -82,6 +88,7 @@ class Experiment(object):
         
     @property
     def injection(self, mask_obj=None):
+        ''' Extract the injection volume voxel data from the hdf5 file if it exists. '''
         f = h5py.File(self.paths.injection_volumes_file_name, 'r')
         try:
             vals = f[str(self.id)].value
@@ -98,7 +105,8 @@ class Experiment(object):
 
     @property
     def density(self, mask_obj=None):
-        f = h5py.File(self.paths.injection_densities_file_name, 'r')
+        ''' Extract the density volume voxel data from the hdf5 file if it exists. '''
+        f = h5py.File(self.paths.projection_densities_file_name, 'r')
 
         try:
             vals = f[str(self.id)].value
@@ -115,6 +123,7 @@ class Experiment(object):
         
     @property
     def injection_mask(self, shell=False):
+        ''' Extract the injection mask from the hdf5 file if it exists. '''        
         if shell:
             return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup=str(self.id))
         else:
@@ -122,9 +131,17 @@ class Experiment(object):
     
     @property
     def injection_mask_inverse(self):
+        ''' Extract the injection mask inverse from the hdf5 file if it exists. '''        
         return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
 
 class ExperimentManager( object ):
+    '''
+    ExperimentManager is a light wrapper around a list of Experiments that
+    provides some simple filtering methods for extracting experiment subsets
+    (wild type, cre, etc).
+    
+    '''
+
     def __init__(self, data_dir=None):
 
         self.paths = Paths(data_dir)
@@ -142,17 +159,30 @@ class ExperimentManager( object ):
         self.experiments_by_id = { e.id: e for e in self.experiment_list }
 
     def all(self):
+        ''' Return the entire list of experiments. '''
         return self.experiment_list
 
     def wildtype(self):
+        ''' Return a generator for just the wild type experiments. '''
         return ( e for e in experiment_list if e.wildtype == True )
 
     def cre(self):
+        ''' Return a generator for just the cre experiments. '''
         return ( e for e in experiment_list if e.wildtype == False )
+
+    def cortex(self):
+        ''' Return a generator for just the cortical injections. '''
+        return ( e for e in experiment_list if 315 in e.path_to_root )
+
+    def noncortex(self):
+        ''' Return a generator for just the cortical injections. '''
+        return ( e for e in experiment_list if not (315 in e.path_to_root) )
         
     def experiment_by_id(self, experiment_id):
+        ''' Get a handle to an experiment by its id. '''
         return self.experiments_by_id[experiment_id]
 
     def __iter__(self):
+        ''' By default, iterating over the manager will iterate through all of the experiments. '''
         return iter(self.experiment_list)
 

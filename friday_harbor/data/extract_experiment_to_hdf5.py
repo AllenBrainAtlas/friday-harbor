@@ -53,7 +53,7 @@ def extract_experiment_to_hdf5(data_dir='.'):
     f_inj_vol.close()
 
 if __name__ == "__main__":
-    if len(sys.argv == 2):
+    if len(sys.argv) == 2:
         extract_experiment_to_hdf5(sys.argv[1])
     else:
         extract_experiment_to_hdf5()

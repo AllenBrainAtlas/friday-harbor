@@ -22,11 +22,30 @@ import os
 import friday_harbor.mhd as mhd
 
 class StructureAnnotation( np.ndarray ):
+    ''' 
+    StructureAnnotation is just a numpy array with some helpful methods bolted
+    on.  You can initialize it with another array as normal, or import
+    from hdf5 or mhd.  Also, it takes care of generating index arrays
+    for the left and right hemispheres.
+    
+    '''
+
     def __new__(cls, input_array):
+        ''' This is what numpy says to do if you want to subclass np.ndarray. '''
         obj = np.asarray(input_array).view(cls)
         return obj
 
+    def __array_finalize__(self, obj):
+        ''' This is what numpy says to do if you want to subclass np.ndarray. '''
+        if obj is None: return
+
     def __init__(self, input_array):
+        ''' 
+        The center of the brain is defaulted to the center of the Z axis.  Set this
+        yourself after initialization if you like, but before you attempt to
+        access the left/right_hemisphere properties.
+        
+        '''
         super(StructureAnnotation, self).__init__(input_array)
 
         self.center_index = int(self.shape[2] / 2)
@@ -34,11 +53,9 @@ class StructureAnnotation( np.ndarray ):
         self._left_hemisphere = None
         self._right_hemisphere = None
 
-    def __array_finalize__(self, obj):
-        if obj is None: return
-
     @staticmethod
     def from_hdf5(file_name):
+        ''' import the grid annotation values from an hdf5 file '''
         f = h5py.File(file_name, 'r')
         a = f['grid_annotation'].value
         f.close()
@@ -47,11 +64,13 @@ class StructureAnnotation( np.ndarray ):
 
     @staticmethod
     def from_mhd(file_name):
+        ''' import the grid annotation values from a meta image file '''
         info, values = mhd.read(file_name)
         return StructureAnnotation(values)
 
     @property
     def coordinates(self):
+        ''' Generate XYZ coordinates for the input array using meshgrid. '''
         if self._coordinates is None:
             s = self.shape
             self._coordinates = np.meshgrid(range(s[0]), range(s[1]), range(s[2]), indexing='ij')        
@@ -60,18 +79,22 @@ class StructureAnnotation( np.ndarray ):
 
     @property
     def XX(self):
+        ''' Get just the X coordinates for the input array. '''   
         return self.coordinates[0]
 
     @property
     def YY(self):
+        ''' Get just the Y coordinates for the input array. '''   
         return self.coordinates[1]
 
     @property
     def ZZ(self):
+        ''' Get just the Z coordinates for the input array. '''   
         return self.coordinates[2]
 
     @property
     def left_hemisphere(self):
+        ''' Get the index list of voxels in the left hemisphere. '''   
         if self._left_hemisphere is None:
             self._left_hemisphere = np.where(self.ZZ < self.center_index)
 
@@ -79,6 +102,7 @@ class StructureAnnotation( np.ndarray ):
 
     @property
     def right_hemisphere(self):
+        ''' Get the index list of voxels in the right hemisphere. '''   
         if self._right_hemisphere is None:
             self._right_hemisphere = np.where(self.ZZ >= self.center_index)
 
