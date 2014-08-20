@@ -84,12 +84,13 @@ def create_masks(data_dir='.'):
 
     for e in ExperimentManager(data_dir):
         print "creating injection masks for", e.id
-        injection_vals = e.injection
+        injection_vals = e.injection()
 
         injection_mask = Mask(np.where(injection_vals != 0))    
         injection_mask.write_to_hdf5_group(f_inj, create_name=str(e.id))
 #         injection_mask_inverse = copy.copy(universal_mask).difference(injection_mask)
 #         injection_mask_inverse.write_to_hdf5_group(f_inj, create_name="%s_inverse" % str(e.id))
+
 
         for c_x, c_y, c_z in zip(*injection_mask.mask):
             for x_i, y_i, z_i in itertools.product(c_x+np.array([-1,0,1]),
