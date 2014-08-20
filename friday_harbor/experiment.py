@@ -124,7 +124,7 @@ class Experiment(object):
     @property
     def injection_mask(self, shell=False):
         ''' Extract the injection mask from the hdf5 file if it exists. '''        
-        if shell:
+        if shell==False:
             return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup=str(self.id))
         else:
             return Mask.read_from_hdf5(self.paths.injection_masks_shell_file_name, subgroup=str(self.id))
