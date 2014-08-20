@@ -27,10 +27,9 @@ import json
 from friday_harbor.mask import Mask
 from friday_harbor.paths import Paths
 import paths
-import h5py
 
 class Ontology(object):
-    def __init__(self, data_dir=None):
+    def __init__(self, data_dir='.'):
         self.paths = Paths(data_dir)
         file_name = self.paths.structure_json_file_name
 

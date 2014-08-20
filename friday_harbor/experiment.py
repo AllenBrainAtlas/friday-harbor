@@ -103,8 +103,8 @@ class Experiment(object):
         else:
             return vals
 
-    @property
-    def density(self, mask_obj=None):
+#     @property
+    def density(self, mask=None):
         ''' Extract the density volume voxel data from the hdf5 file if it exists. '''
         f = h5py.File(self.paths.projection_densities_file_name, 'r')
 
@@ -116,8 +116,8 @@ class Experiment(object):
 
         f.close()
 
-        if mask_obj:
-            return vals[mask_obj]
+        if mask:
+            return vals[mask.mask].sum()
         else:
             return vals
         
@@ -129,10 +129,10 @@ class Experiment(object):
         else:
             return Mask.read_from_hdf5(self.paths.injection_masks_shell_file_name, subgroup=str(self.id))
     
-    @property
-    def injection_mask_inverse(self):
-        ''' Extract the injection mask inverse from the hdf5 file if it exists. '''        
-        return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
+#     @property
+#     def injection_mask_inverse(self):
+#         ''' Extract the injection mask inverse from the hdf5 file if it exists. '''        
+#         return Mask.read_from_hdf5(self.paths.injection_masks_file_name, subgroup='%s_inverse' % str(self.id))
 
 class ExperimentManager( object ):
     '''
@@ -164,19 +164,19 @@ class ExperimentManager( object ):
 
     def wildtype(self):
         ''' Return a generator for just the wild type experiments. '''
-        return ( e for e in experiment_list if e.wildtype == True )
+        return ( e for e in self.experiment_list if e.wildtype == True )
 
     def cre(self):
         ''' Return a generator for just the cre experiments. '''
-        return ( e for e in experiment_list if e.wildtype == False )
+        return ( e for e in self.experiment_list if e.wildtype == False )
 
     def cortex(self):
         ''' Return a generator for just the cortical injections. '''
-        return ( e for e in experiment_list if 315 in e.path_to_root )
+        return ( e for e in self.experiment_list if 315 in e.path_to_root )
 
     def noncortex(self):
         ''' Return a generator for just the cortical injections. '''
-        return ( e for e in experiment_list if not (315 in e.path_to_root) )
+        return ( e for e in self.experiment_list if not (315 in e.path_to_root) )
         
     def experiment_by_id(self, experiment_id):
         ''' Get a handle to an experiment by its id. '''

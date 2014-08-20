@@ -3,7 +3,6 @@ import os
 class Paths( object ):
     def __init__(self, data_dir='.'):
         self.data_dir = data_dir
-        
         self.experiment_raw_data_directory = os.path.normpath(os.path.join(self.data_dir, 'raw_data'))
         
         self.structure_json_file_name = os.path.normpath(os.path.join(self.data_dir, 'structure_data.json'))
