@@ -13,11 +13,8 @@ def test_experiment_list_length():
 
 def test_mask():
     experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
-    e = experiment_manager.experiment_list[1]
-    print e.id
-    ij = e.injection_mask
-    print ij.mask
-    print e.density(mask=ij)
+    e = experiment_manager.experiments_by_id[180436360]
+    assert e.density(mask=e.injection_mask).sum() == 2289.300048828125
         
 if __name__ == "__main__":
     test_structure_list_length()
