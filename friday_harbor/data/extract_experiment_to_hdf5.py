@@ -25,18 +25,20 @@ from friday_harbor import mhd
 from friday_harbor.mask import Mask
 from friday_harbor.utilities import write_dictionary_to_group
 from friday_harbor.paths import Paths
+from friday_harbor.experiment import ExperimentManager
 
 def extract_experiment_to_hdf5(data_dir='.'):
-    paths = Paths(data_dir)
+    exp_manager = ExperimentManager(data_dir)
 
-    raw_data_dir = paths.experiment_raw_data_directory
+    raw_data_dir = exp_manager.paths.experiment_raw_data_directory
 
     # Settings:
-    f_proj = h5py.File(paths.projection_densities_file_name, 'w')
-    f_inj_vol = h5py.File(paths.injection_volumes_file_name, 'w')
+    f_proj = h5py.File(exp_manager.paths.projection_densities_file_name, 'w')
+    f_inj_vol = h5py.File(exp_manager.paths.injection_volumes_file_name, 'w')
 
     # Extract volumes of PD and injection sites:
-    for experiment_id in os.listdir(raw_data_dir):
+    for experiment in exp_manager:
+        experiment_id = str(experiment.id)
         curr_dir = os.path.join(raw_data_dir, experiment_id)
   
         density_mhd = os.path.join(curr_dir, 'density.mhd')
