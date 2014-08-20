@@ -86,7 +86,6 @@ class Experiment(object):
         for key, val in kwargs.iteritems():
             setattr(self, key, val)
         
-    @property
     def injection(self, mask_obj=None):
         ''' Extract the injection volume voxel data from the hdf5 file if it exists. '''
         f = h5py.File(self.paths.injection_volumes_file_name, 'r')
@@ -103,8 +102,7 @@ class Experiment(object):
         else:
             return vals
 
-#     @property
-    def density(self, mask=None):
+    def density(self, mask_obj=None):
         ''' Extract the density volume voxel data from the hdf5 file if it exists. '''
         f = h5py.File(self.paths.projection_densities_file_name, 'r')
 
@@ -116,12 +114,11 @@ class Experiment(object):
 
         f.close()
 
-        if mask:
-            return vals[mask.mask].sum()
+        if mask_obj:
+            return vals[mask_obj.mask]
         else:
             return vals
         
-    @property
     def injection_mask(self, shell=False):
         ''' Extract the injection mask from the hdf5 file if it exists. '''        
         if shell:
