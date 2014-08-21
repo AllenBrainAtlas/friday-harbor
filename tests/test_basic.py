@@ -5,6 +5,7 @@ import numpy as np
 
 def test_structure_list_length():
     base_ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    print len(base_ontology.structure_list)
     assert len(base_ontology.structure_list) == 1205
     
 def test_experiment_list_length():
@@ -77,6 +78,13 @@ def test_intersection():
         list_2 = sorted(mask.Mask.intersection(VIS_mask, VISp_mask).mask[ii])
         assert list_1 == list_2
 
+def test_structure():
+    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    LGd_id = ontology.acronym_id_dict['LGd']
+    LGd_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(LGd_id)
+
+
+#     MOp_structure
         
 if __name__ == "__main__":
     test_structure_list_length()
@@ -84,3 +92,4 @@ if __name__ == "__main__":
     test_mask()
     test_union()
     test_intersection()
+    test_structure()

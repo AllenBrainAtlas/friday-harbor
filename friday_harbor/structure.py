@@ -37,7 +37,7 @@ class Ontology(object):
         self.structure_list = []
         with open(file_name) as f:
             structure_data = json.load(f)
-            self.structure_list = [ Structure.from_json(d) for d in structure_data ]
+            self.structure_list = [ Structure.from_json(d) for d in structure_data['msg']]
 
         # Set child list:
         for s in self.structure_list:
@@ -83,7 +83,6 @@ class Structure( object ):
     @staticmethod
     def from_json(region_dict):
         import_dict = {}
-    
         import_dict['structure_id'] = int(region_dict['id'])
         acronym = str(region_dict['acronym']).strip()
         import_dict['acronym'] = acronym
