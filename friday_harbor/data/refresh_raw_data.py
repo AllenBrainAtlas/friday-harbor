@@ -18,19 +18,17 @@
 
 import requests
 import os
-import zipfile
-import shutil
 import sys
 from friday_harbor.experiment import ExperimentManager
 from friday_harbor.paths import Paths
-
+from friday_harbor.data.api import save_experiment_grid_data
+from friday_harbor.data.api import unzip_experiment_grid_data
 
 def refresh_raw_data(data_dir='.'):
     paths = Paths(data_dir)
 
     # Settings:
     exp_manager = ExperimentManager(data_dir)
-    exp_info_url_pattern = 'http://api.brain-map.org/grid_data/download/%s?include=density,injection'
 
     # Make sure the directory exists
     try:
@@ -42,24 +40,11 @@ def refresh_raw_data(data_dir='.'):
     for experiment in exp_manager:
         # Initializations:
         file_name = os.path.join(paths.experiment_raw_data_directory, 'experiment_%s.zip' % experiment.id)
-        experiment_info_url =  exp_info_url_pattern % experiment.id
-        
-        # Get data:
-        with open(file_name,'wb') as handle:
-            request = requests.get(experiment_info_url, stream=True)
-            for block in request.iter_content(1024):
-                if not block:
-                    break
-                handle.write(block)
+        unzip_path = os.path.join(paths.experiment_raw_data_directory, '%s' % experiment.id)        
 
-        # Unzip:
-        unzip_path = os.path.join(paths.experiment_raw_data_directory, '%s' % experiment.id)
-        shutil.rmtree(unzip_path, unzip_path)
-        os.mkdir(unzip_path)
-        zf = zipfile.ZipFile(file_name, 'r')
-        zf.extractall(unzip_path)
-        zf.close()
-        os.remove(file_name)
+        save_experiment_grid_data(experiment.id, file_name)
+        unzip_experiment_grid_data(file_name, unzip_path)
+
         print file_name
 
 if __name__ == "__main__":

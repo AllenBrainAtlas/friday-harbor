@@ -21,31 +21,19 @@ import requests
 import os
 import sys
 from friday_harbor.paths import Paths
+from friday_harbor.data.api import experiment_search
 
-def refresh_experiment_json(data_dir='.', injection_structures=None, wild_only=False):
-
-    # default value for injection structures is gray (structure id 8)
-    if injection_structures is None:
-        injection_structures = [8]
+def refresh_experiment_json(data_dir='.', injection_structures=None, wild=True, cre=True):
 
     paths = Paths(data_dir)
 
-    injection_structures = ','.join([str(i) for i in injection_structures])
-    experiment_info_url = 'http://api.brain-map.org/api/v2/data/query.json?' + \
-                          'criteria=service::mouse_connectivity_injection_structure[num_rows$eq3000]' + \
-                          '[primary_structure_only$eqtrue]' + \
-                          '[injection_structures$eq'+injection_structures+']'
-
-    # if we are restricted to wild type experiments only, add that filter to the query (id for wild = 0)
-    if wild_only:
-        experiment_info_url += '[transgenic_lines$eq0]'
-        
-    # Get data:
-    raw_json = requests.request('get', experiment_info_url).json()
+    experiment_data = experiment_search(injection_structures, wild, cre)
     
+    print experiment_data
+
     # Write 
     with open(paths.experiment_json_file_name,'wb') as f:
-        json.dump(raw_json, f)
+        json.dump(experiment_data, f)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
@@ -53,8 +41,6 @@ if __name__ == "__main__":
     else:
         refresh_experiment_json()
     
-
-
 
 
 
