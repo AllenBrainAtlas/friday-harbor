@@ -55,16 +55,16 @@ class Ontology(object):
             self.acronym_id_dict[s.acronym] = s.structure_id
 
     def get_mask_from_id_nonzero(self, structure_id):
-        curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_nonzero' % curr_acronym)
+        curr_acronym = self.id_acronym_dict[structure_id]
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, subgroup='%s_nonzero' % curr_acronym)
     
     def get_mask_from_id_right_hemisphere_nonzero(self, structure_id):
-        curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_right_nonzero' % curr_acronym)
+        curr_acronym = self.id_acronym_dict[structure_id]
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, subgroup='%s_right_nonzero' % curr_acronym)
     
     def get_mask_from_id_left_hemisphere_nonzero(self, structure_id):
-        curr_acronym = self.id_structure_dict[structure_id]['acronym']
-        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, '%s_left_nonzero' % curr_acronym)
+        curr_acronym = self.id_acronym_dict[structure_id]
+        return Mask.read_from_hdf5(self.paths.structure_masks_file_name, subgroup='%s_left_nonzero' % curr_acronym)
 
     def structure_by_id(self, structure_id):
         return self.id_structure_dict[structure_id]

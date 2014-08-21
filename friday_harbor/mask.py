@@ -55,7 +55,6 @@ class Mask(object):
     @staticmethod
     def read_from_hdf5(file_name, subgroup=None):
         ''' Read a Mask out of an hdf5 file (group optional). '''
-
         f = h5py.File(file_name, 'r')
         if subgroup == None:
             mask_obj = Mask.read_from_hdf5_group(f)
