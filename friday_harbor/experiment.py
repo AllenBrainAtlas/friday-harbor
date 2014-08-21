@@ -149,9 +149,9 @@ class ExperimentManager( object ):
 
         # Get data:
         with open(experiment_json_file_name) as f:
-            raw_json = json.load(f)
+            experiment_data = json.load(f)
 
-            self.experiment_list = [ Experiment.from_json(d, self.paths) for d in raw_json['msg'] ]
+            self.experiment_list = [ Experiment.from_json(d, self.paths) for d in experiment_data ]
 
         self.experiments_by_id = { e.id: e for e in self.experiment_list }
 

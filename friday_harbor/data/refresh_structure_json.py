@@ -21,18 +21,16 @@ import requests
 import os
 import sys
 from friday_harbor.paths import Paths
+from friday_harbor.data.api import structure_search
 
 def refresh_structure_json(data_dir='.'):
     paths = Paths(data_dir)
     
-    anatomical_structure_info_url = 'http://api.brain-map.org/api/v2/data/Structure/query.json?criteria=[graph_id$eq1]&order=structures.graph_order&tabular=structures.id,structures.acronym,structures.graph_order,structures.color_hex_triplet,structures.structure_id_path,structures.name&start_row=0&num_rows=all'
+    structure_data = structure_search()
 
-    # Get data:
-    raw_json = requests.request('get', anatomical_structure_info_url).json()
-    
     # Write 
     with open(paths.structure_json_file_name, 'wb') as f:
-        json.dump(raw_json, f)
+        json.dump(structure_data, f)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
