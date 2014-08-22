@@ -28,8 +28,6 @@ def refresh_experiment_json(data_dir='.', injection_structures=None, wild=True, 
     paths = Paths(data_dir)
 
     experiment_data = experiment_search(injection_structures, wild, cre)
-    
-    print experiment_data
 
     # Write 
     with open(paths.experiment_json_file_name,'wb') as f:

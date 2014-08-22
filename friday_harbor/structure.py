@@ -37,7 +37,7 @@ class Ontology(object):
         self.structure_list = []
         with open(file_name) as f:
             structure_data = json.load(f)
-            self.structure_list = [ Structure.from_json(d) for d in structure_data['msg']]
+            self.structure_list = [ Structure.from_json(d) for d in structure_data]
 
         # Set child list:
         for s in self.structure_list:

@@ -5,7 +5,6 @@ import numpy as np
 
 def test_structure_list_length():
     base_ontology = structure.Ontology(data_dir='../friday_harbor/data')
-    print len(base_ontology.structure_list)
     assert len(base_ontology.structure_list) == 1205
     
 def test_experiment_list_length():
@@ -82,9 +81,17 @@ def test_structure():
     ontology = structure.Ontology(data_dir='../friday_harbor/data')
     LGd_id = ontology.acronym_id_dict['LGd']
     LGd_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(LGd_id)
+    assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 70176
+    
+    LGd_mask = ontology.get_mask_from_id_nonzero(LGd_id)
+    assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 140067
+    LGd_mask = ontology.get_mask_from_id_right_hemisphere_nonzero(LGd_id)
+    assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 69891
 
+def test_centroid():
+    pass
 
-#     MOp_structure
+# TEST CENTROID
         
 if __name__ == "__main__":
     test_structure_list_length()
