@@ -16,16 +16,18 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-To get data (warning, this takes a long time):
+Install this package by:
 
 $ cd /path/to/repo.git
-$ bash data/scripts/regenerate_data.sh
-$ ls data/src/ # data is stored here
+$ python setup.py install
 
-To use the library once you have the data downloaded, add it to your python path:
+To get data (warning, this takes a long time):
 
-$ export PYTHONPATH=/path/to/friday_harbor.git:$PYTHONPATH
-$ python
+>> from friday_harbor.data.regenerate_data import regenerate_data
+>> regenerate_data('/existing/path/to/data')
+
+To use the library once you have the data downloaded:
+
 >> from friday_harbor.Experiment import ExperimentManager
 >> experiment_manager = ExperimentManager()
 >> for experiment in experiment_manager:
