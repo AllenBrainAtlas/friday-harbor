@@ -28,7 +28,7 @@ To get data (warning, this takes a long time):
 
 To use the library once you have the data downloaded:
 
->> from friday_harbor.Experiment import ExperimentManager
+>> from friday_harbor.experiment import ExperimentManager
 >> experiment_manager = ExperimentManager()
 >> for experiment in experiment_manager:
 >>     ...
