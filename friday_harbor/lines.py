@@ -7,15 +7,12 @@ class Lines( object ):
 
     def by_target_voxel(self, target_voxel):
         f = h5py.File(self.paths.lines_file_name, 'r')
-        sx = str(target_voxel[0])
-        sy = str(target_voxel[1])
-        sz = str(target_voxel[2])
 
         experiments = {
         }
 
         try:
-            group_name = '/%d/%d/%d' % (sx, sy, sz)
+            group_name = '/%d/%d/%d' % (target_voxel[0], target_voxel[1], target_voxel[2])
             g = f[group_name]
             for k in g.keys():
                 experiment_id = int(k)
@@ -24,12 +21,13 @@ class Lines( object ):
                     'density': d['density'].value,
                     'path': d['path'].value
                 }
-        except:
+        except Exception as e:
             f.close()
+            print e
             return None
 
-        return experiments
         f.close()
+        return experiments
 
     def by_experiment_id(self, experiment_id):
         f = h5py.File(self.paths.lines_file_name, 'r')
@@ -38,7 +36,7 @@ class Lines( object ):
 
         # first loop on x coords
         for x in f:
-            xg = f[sx]
+            xg = f[x]
 
             # loop on y coords
             for y in xg:
@@ -46,7 +44,7 @@ class Lines( object ):
 
                 # loop on z coords
                 for z in yg:
-                    zg = yz[z]
+                    zg = yg[z]
 
                     # see if the experiment exists
                     eid = str(experiment_id)
@@ -56,7 +54,7 @@ class Lines( object ):
 
                         eg = zg[eid]
                         
-                        experiment[coord] = {
+                        experiments[coord] = {
                             'density': eg['density'].value,
                             'path': eg['path'].value
                         }
