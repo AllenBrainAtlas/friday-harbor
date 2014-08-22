@@ -46,6 +46,10 @@ class Mask(object):
         f = h5py.File(file_name, 'w')
         self.write_to_hdf5_group(f)
         f.close()
+        
+    @property
+    def centroid(self):
+        return np.array(map(lambda x: np.mean(x), self.mask))
             
     @staticmethod
     def read_from_hdf5_group(group):

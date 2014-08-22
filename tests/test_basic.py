@@ -89,9 +89,11 @@ def test_structure():
     assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 69891
 
 def test_centroid():
-    pass
-
-# TEST CENTROID
+    
+    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    MOp_id = ontology.acronym_id_dict['MOp']
+    MOp_mask = ontology.get_mask_from_id_nonzero(MOp_id)
+    assert tuple(map(int,MOp_mask.centroid)) == (43, 21, 56)
         
 if __name__ == "__main__":
     test_structure_list_length()
@@ -100,3 +102,4 @@ if __name__ == "__main__":
     test_union()
     test_intersection()
     test_structure()
+    test_centroid()
