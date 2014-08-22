@@ -25,7 +25,7 @@ class Paths( object ):
         self.brain_mask_file_name = os.path.normpath(os.path.join(self.data_dir, 'brain_mask.hdf5'))
         self.universal_mask_file_name = os.path.normpath(os.path.join(self.data_dir, 'universal_mask.hdf5'))
 
-        self.lines_file_name = os.path.normpath(os.path.join(self.data_dir, 'lines.hdf5'))
+        self.lines_directory = os.path.normpath(os.path.join(self.data_dir, 'lines'))
 
 
 

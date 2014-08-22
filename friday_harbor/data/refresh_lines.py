@@ -5,6 +5,11 @@ from friday_harbor.mask import Mask
 from friday_harbor.api import target_spatial_search
 
 def refresh_lines(data_dir='.'):
+    '''
+    This will download lines into an hdf5. 
+    NOTE: methods in friday_harbor.lines access the lines in a custom binary format,
+    NOT the hdf5 files downloaded here.  
+    '''
     em = ExperimentManager(data_dir)
     paths = em.paths
 
