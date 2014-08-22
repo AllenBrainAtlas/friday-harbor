@@ -98,7 +98,7 @@ class Experiment(object):
         f.close()
 
         if mask_obj:
-            return vals[mask_obj]
+            return vals[mask_obj.mask]
         else:
             return vals
 
