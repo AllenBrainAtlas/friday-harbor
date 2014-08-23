@@ -32,6 +32,8 @@ TYPE_MAP = {
 
 INV_TYPE_MAP = { v:k for k,v in TYPE_MAP.iteritems() }
 
+# some meta image readers assume that the header values are stored in
+# a particular order.  I'm looking at you, ITK-SNAP.
 KEY_ORDER = [
     'ObjectType',
     'NDims',
@@ -48,7 +50,27 @@ KEY_ORDER = [
     'ElementDataFile'
 ]
 
+# These values will be used to write an mhd file if none are explicitly
+# given to the writing function.
+DEFAULT_HEADER_VALUES = {
+    'ObjectType': 'Image',
+    'NDims': '3',
+    'BinaryData': 'True',
+    'BinaryDataByteOrderMSB': 'False',
+    'CompressedData': 'False',
+    'TransformMatrix': '1 0 0 0 1 0 0 0 1',
+    'Offset': '0 0 0',
+    'CenterOfRotation': '0 0 0',
+    'AnatomicalOrientation': 'RAI',
+    'ElementSpacing': '100 100 100'
+}
+
 def read(header_file_name):
+    '''
+    Given and mhd file, this assumes that the data is stored as a binary blob
+    in the 'ElementDataFile' listed the header.  
+    Returns a tuple of the form (meta_data_dictionary, numpy_array).
+    '''
     header_file_name = os.path.abspath(header_file_name)
 
     print "reading", header_file_name
@@ -77,6 +99,12 @@ def read(header_file_name):
     return meta, raw
 
 def write(header_file_name, meta, raw):
+    '''
+    Write an .mhd file with the given meta data and numpy array.  Appropriate header
+    values will be set based on the size and shape of the array, however the 
+    remainder will be pulled from the supplied 'meta' dictionary.  If they
+    do not exist there, DEFAULT_HEADER_VALUES are used.
+    '''
     base, ext = os.path.splitext(header_file_name)
     assert ext == '.mhd', "%s is not an MHD file" % (header_file_name)
 
@@ -88,7 +116,9 @@ def write(header_file_name, meta, raw):
     with open(header_file_name, 'wb') as header_file:
         for k in KEY_ORDER:
             if k in meta:
-                header_file.write(k + " = " + meta[k] + '\n')
+                header_file.write(k + ' = ' + meta[k] + '\n')
+            else:
+                header_file.write(k + ' = ' + DEFAULT_HEADER_VALUES[k] + '\n')
 
     # note the transpose! numpy.tofile writes in 'C' order only, so transpose to 'F'.
     raw.transpose().tofile(raw_file_name)
