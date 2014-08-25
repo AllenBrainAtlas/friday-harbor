@@ -21,6 +21,7 @@ import struct
 from friday_harbor.paths import Paths
 import numpy as np
 import os
+from friday_harbor.mask import Mask
 
 class Lines( object ):
     '''
@@ -44,31 +45,40 @@ class Lines( object ):
         file_name = '%s/%d/%d_%d_%d' % (self.paths.lines_directory, coord[0], coord[0], coord[1], coord[2])
         return read_lines_file(file_name, experiment_ids)
 
-    def by_experiment_id(self, experiment_id):
+    def by_experiment_id(self, experiment_id, mask=None):
         '''
         Scan through all of the target voxel files for experiments matching
         the input experiment id.  Return a dictionary from voxel -> experiment
         of all matching voxels.
         '''
-        print "WARNING: Lines.by_experiment_id is incredibly slow. use it sparingly."
+        if mask is None:
+            print "WARNING: Lines.by_experiment_id is incredibly slow. Use it sparingly, and when " + \
+                "you do, consider restricting your search to a voxel mask."
+            mask = Mask.read_from_hdf5(self.paths.brain_mask_file_name)
+
+        # build up a set of unique voxels in this mask
+        voxels = []
+        for i in xrange(len(mask)):
+            x = int(mask.mask[0][i] * 100)
+            y = int(mask.mask[1][i] * 100)
+            z = int(mask.mask[2][i] * 100)
+
+            voxels.append((x,y,z))
         
+        root = self.paths.lines_directory
         experiments = {}
-        current_dirname = ""
-        for root, sub_folders, file_names in os.walk(self.paths.lines_directory):
-            for file_name in file_names:
-                full_file_name = os.path.join(root, file_name)
-                file_experiments = read_lines_file(full_file_name, experiment_ids=[experiment_id])
+   
+        num_voxels = len(voxels)
+        for i,voxel in enumerate(voxels):
+            if i % 100 == 0:
+                print "%d/%d voxels searched" % (i, num_voxels)
 
-                dirname = os.path.dirname(full_file_name)
-                if current_dirname != dirname:
-                    current_dirname = dirname
-                    print current_dirname
+            file_name = os.path.join(root, str(voxel[0]), '%d_%d_%d' % (voxel[0], voxel[1], voxel[2]))
+            file_experiments = read_lines_file(file_name, experiment_ids=[experiment_id])
 
-                for file_experiment in file_experiments.iteritems():
-                    coord_strings = file_name.split('_')
-                    coord = tuple([ int(cs)/100 for cs in coord_strings ])
-                    
-                    experiments[coord] = file_experiment
+            # there should only be one experiment here, since there is only one experiment input
+            for file_experiment in file_experiments.iteritems():
+                experiments[voxel] = file_experiment
 
         return experiments
 

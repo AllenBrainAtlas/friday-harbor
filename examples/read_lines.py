@@ -12,6 +12,7 @@
 # limitations under the License.
 
 from friday_harbor.lines import Lines
+from friday_harbor.structure import Ontology
 
 # This should point to the data directory. Note that the lines are only included
 # in the full 'data' directory distributed at the beginning of the course.  
@@ -41,5 +42,15 @@ print "paths from experiments", experiment_ids, "to", target_voxel, ":", len(exp
 # from a particular experiment's injection site.  Every voxel file needs to be 
 # searched for a record of that experiment.  The return value is a dictionary from 
 # voxel coordinate -> path coordinates and density values.
-paths = lines.by_experiment_id( 183282970 )
-print len(paths), "voxels targeted by experiments", experiment_ids
+o = Ontology('.')
+
+structure_id = 985 # primary motor (MOp)
+experiment_id = 180719293 # an injection into MOp in the right hemisphere
+
+# get the left hemisphere mask for the above structure
+mask = o.get_mask_from_id_left_hemisphere_nonzero(structure_id)
+
+# now extract paths from a given experiment to voxels in the target mask
+paths = lines.by_experiment_id( experiment_id, mask )
+
+print "%d voxels targeted by experiment %d in structure %d" % (len(paths), experiment_id, structure_id )
