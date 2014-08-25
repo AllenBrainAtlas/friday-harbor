@@ -1,3 +1,16 @@
+# Copyright 2014 Allen Institute for Brain Science
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from friday_harbor.lines import Lines
 
 # This should point to the data directory. Note that the lines are only included
@@ -16,6 +29,7 @@ target_voxel = ( 71, 37, 78 )
 # 3D coordinates of the path vertices, as well as the density values at those
 # vertices.
 experiments = lines.by_target_voxel( target_voxel )
+print len(experiments), "experiments targeting", target_voxel
 
 # The flip side to this is that it is very slow to search for all paths emanting
 # from a particular experiment's injection site.  Every voxel file needs to be 
@@ -27,3 +41,4 @@ experiment_id = 182616478
 # The return value is a dictionary from voxel coordinate -> path coordinates
 # and density values.
 paths = lines.by_experiment_id( experiment_id )
+print len(paths), "voxels targeted by experiment", experiment_id

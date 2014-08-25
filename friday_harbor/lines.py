@@ -48,11 +48,19 @@ class Lines( object ):
         the input experiment id.  Return a dictionary from voxel -> experiment
         of all matching voxels.
         '''
+        print "WARNING: Lines.by_experiment_id is incredibly slow. use it sparingly."
+        
         experiments = {}
+        current_dirname = ""
         for root, sub_folders, file_names in os.walk(self.paths.lines_directory):
             for file_name in file_names:
                 full_file_name = os.path.join(root, file_name)
-                file_experiments = read_lines_file(full_file_name)
+                file_experiments = read_lines_file(full_file_name, experiment_ids=[experiment_id])
+
+                dirname = os.path.dirname(full_file_name)
+                if current_dirname != dirname:
+                    current_dirname = dirname
+                    print current_dirname
 
                 if experiment_id in file_experiments:
                     coord_strings = file_name.split('_')
@@ -61,18 +69,14 @@ class Lines( object ):
                     
                     experiments[coord] = file_experiments[experiment_id]
 
-                return experiments
-
         return experiments
 
 
-def read_lines_file(file_name):
+def read_lines_file(file_name, experiment_ids=None):  
     '''
     The target search path lines are stored in a custom binary file.  Each file
     contains a list of experiments and the path from each experiment injection
     site to the target voxel.  Also, the projections signal density along the path.
-
-    TODO: take as input an optional experiment id and only read relevant paths.  
     '''
 
     # give up if the file does not exist
@@ -81,8 +85,13 @@ def read_lines_file(file_name):
 
     with open(file_name, 'rb') as f:
 
+        header_size = 0
+
         # read in the number of experiments
-        bytes_read = f.read(struct.calcsize('=I')) # unsigned int
+        uintsize = struct.calcsize('=I')
+        header_size += uintsize
+
+        bytes_read = f.read(uintsize) # unsigned int
         num_experiments = struct.unpack('=I', bytes_read)[0]
 
         # This is what each experiment entry looks like
@@ -110,39 +119,43 @@ def read_lines_file(file_name):
 
         # read in the experiment list
         experiment_list = []
-        experiments = {}
 
         for i in xrange(num_experiments):
 
             # read the header entry
             bytes_read = f.read(experiment_bytes)
             row_id, value, transgenic_line_id, file_offset, num_points = struct.unpack(experiment_fmt, bytes_read)
+            header_size += experiment_bytes
 
-            experiment = {
-                'row_id': row_id, 
+            experiment_list.append({
+                'experiment_id': row_id, 
                 'value': value, 
                 'transgenic_line_id': transgenic_line_id, 
                 'file_offset': file_offset, 
                 'num_points': num_points,
                 'path': np.zeros([num_points, 3], dtype=np.uint16),
                 'density': np.zeros([num_points], dtype=np.float16)
-            }
+            })
 
-            experiment_list.append(experiment)
-            experiments[experiment['row_id']] = experiment
+        # if we're looking for particular experiments, filter to just those
+        if experiment_ids is not None:
+            experiment_list = [ e for e in experiment_list if e['experiment_id'] in experiment_ids ]
 
-        # now read in the paths for each experiment
+        # loop through the experiments we care about and read in the paths
         for experiment in experiment_list:
+
+            # seek to the correct position in the file for this experiment
+            f.seek(header_size + experiment['file_offset'], 0)
 
             # read in one point at a time
             for i in xrange(experiment['num_points']):
                 bytes_read = f.read(point_bytes)
                 x,y,z,density,intensity = struct.unpack(point_fmt, bytes_read)
-                            
+                
                 experiment['path'][i] = np.array([x,y,z])
                 experiment['density'][i] = density
-
-    return experiments
+        
+    return { e['experiment_id']: e for e in experiment_list }
                         
                              
 
