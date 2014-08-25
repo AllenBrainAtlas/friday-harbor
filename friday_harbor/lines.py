@@ -24,7 +24,7 @@ import os
 
 class Lines( object ):
     '''
-    This class provides some helper methods for breaking into the lines direco
+    This class provides some helper methods for breaking into the lines directory.
     '''
 
     def __init__(self, data_dir='.'):
