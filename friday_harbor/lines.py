@@ -18,12 +18,16 @@
 
 import h5py
 import struct
-from friday_harbor.paths import Paths
 import numpy as np
 import os
+
+from friday_harbor.paths import Paths
 from friday_harbor.mask import Mask
+from friday_harbor.experiment import ExperimentManager
+
 
 class Lines( object ):
+    EXPERIMENT_DENSITY_RANGE = [ 0.05, 0.3 ]
     '''
     This class provides some helper methods for breaking into the lines directory.
     '''
@@ -51,12 +55,23 @@ class Lines( object ):
         the input experiment id.  Return a dictionary from voxel -> experiment
         of all matching voxels.
         '''
-        if mask is None:
-            print "WARNING: Lines.by_experiment_id is incredibly slow. Use it sparingly, and when " + \
-                "you do, consider restricting your search to a voxel mask."
-            mask = Mask.read_from_hdf5(self.paths.brain_mask_file_name)
 
-        # build up a set of unique voxels in this mask
+        # we only want to search through voxels that have reasonable density values, 
+        # so first build a density mask
+        em = ExperimentManager(self.paths.data_dir)
+        experiment = em.experiment_by_id(experiment_id)
+        
+        density = experiment.density()
+        lower_density_mask = Mask(np.where(density >= Lines.EXPERIMENT_DENSITY_RANGE[0]))
+        upper_density_mask = Mask(np.where(density <= Lines.EXPERIMENT_DENSITY_RANGE[1]))
+
+        # if another mask is supplied, intersect it with the density mask
+        if mask is not None:
+            mask = Mask.intersection(mask, lower_density_mask, upper_density_mask)
+        else:
+            mask = Mask.intersection(lower_density_mask, upper_density_mask)
+
+        # build up a set of voxels in this mask
         voxels = []
         for i in xrange(len(mask)):
             x = int(mask.mask[0][i] * 100)

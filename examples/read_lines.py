@@ -42,10 +42,12 @@ print "paths from experiments", experiment_ids, "to", target_voxel, ":", len(exp
 # from a particular experiment's injection site.  Every voxel file needs to be 
 # searched for a record of that experiment.  The return value is a dictionary from 
 # voxel coordinate -> path coordinates and density values.
+experiment_id = 180719293 # an injection into MOp in the right hemisphere
+
+# You can restrict your voxel search by supplying a voxel Mask.
 o = Ontology('.')
 
 structure_id = 985 # primary motor (MOp)
-experiment_id = 180719293 # an injection into MOp in the right hemisphere
 
 # get the left hemisphere mask for the above structure
 mask = o.get_mask_from_id_left_hemisphere_nonzero(structure_id)
@@ -53,4 +55,9 @@ mask = o.get_mask_from_id_left_hemisphere_nonzero(structure_id)
 # now extract paths from a given experiment to voxels in the target mask
 paths = lines.by_experiment_id( experiment_id, mask )
 
-print "%d voxels targeted by experiment %d in structure %d" % (len(paths), experiment_id, structure_id )
+print "%d voxels targeted by experiment %d in the left hemisphere of structure %d" % (len(paths), experiment_id, structure_id )
+
+# If you do not supply a mask, by default you will search through all voxels that
+# have low projection signal density values (see Lines.EXPERIMENT_DENSITY_RANGE)
+paths = lines.by_experiment_id( experiment_id )
+print "%d voxels targeted by experiment %d" % (len(paths), experiment_id, structure_id )
