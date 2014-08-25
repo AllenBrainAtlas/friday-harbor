@@ -33,14 +33,16 @@ class Lines( object ):
         '''
         self.paths = Paths(data_dir)
 
-    def by_target_voxel(self, target_voxel):
+    def by_target_voxel(self, target_voxel, experiment_ids=None):
         '''
         Convert the target voxel to a file name within the lines directory and read it.
         Returns a experiment_id -> experiment dictionary for experiments within the file.
+        If you want to restrict your results to a particular set of experiment ids, 
+        supply an array of experiment_ids.
         '''
         coord = [ int(v) * 100 for v in target_voxel ]
         file_name = '%s/%d/%d_%d_%d' % (self.paths.lines_directory, coord[0], coord[0], coord[1], coord[2])
-        return read_lines_file(file_name)
+        return read_lines_file(file_name, experiment_ids)
 
     def by_experiment_id(self, experiment_id):
         '''
@@ -62,12 +64,11 @@ class Lines( object ):
                     current_dirname = dirname
                     print current_dirname
 
-                if experiment_id in file_experiments:
+                for file_experiment in file_experiments.iteritems():
                     coord_strings = file_name.split('_')
-                    
                     coord = tuple([ int(cs)/100 for cs in coord_strings ])
                     
-                    experiments[coord] = file_experiments[experiment_id]
+                    experiments[coord] = file_experiment
 
         return experiments
 

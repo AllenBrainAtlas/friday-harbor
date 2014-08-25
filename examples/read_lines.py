@@ -31,14 +31,15 @@ target_voxel = ( 71, 37, 78 )
 experiments = lines.by_target_voxel( target_voxel )
 print len(experiments), "experiments targeting", target_voxel
 
+# Lines.by_target_voxel will restrict your results to a set of experiments if
+# you like.
+experiment_ids = [ 100148503, 183282970 ]
+experiments = lines.by_target_voxel( target_voxel, experiment_ids )
+print "paths from experiments", experiment_ids, "to", target_voxel, ":", len(experiments)
+
 # The flip side to this is that it is very slow to search for all paths emanting
 # from a particular experiment's injection site.  Every voxel file needs to be 
-# searched for a record of that experiment.  This experiment id corresponds to
-# an injection into the primary motor cortex.
-# http://connectivity.brain-map.org/projection/experiment/182616478
-experiment_id = 182616478
-
-# The return value is a dictionary from voxel coordinate -> path coordinates
-# and density values.
-paths = lines.by_experiment_id( experiment_id )
-print len(paths), "voxels targeted by experiment", experiment_id
+# searched for a record of that experiment.  The return value is a dictionary from 
+# voxel coordinate -> path coordinates and density values.
+paths = lines.by_experiment_id( 183282970 )
+print len(paths), "voxels targeted by experiments", experiment_ids
