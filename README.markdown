@@ -17,8 +17,8 @@ Example scripts are located in ["examples" subdirectory](https://github.com/Alle
 
 Install this package by:
 
-$ cd /path/to/repo.git
-$ python setup.py install
+	$ cd /path/to/repo.git
+	$ python setup.py install
 
 ## Dependencies (python packages):
 	numpy/scipy
