@@ -21,24 +21,33 @@ from friday_harbor.mask import Mask
 import friday_harbor.experiment as experiment
 
 # Settings:
-data_dir = '../friday_harbor/data' 
-my_LIMS_id = 277714322
+data_dir = '../friday_harbor/data'
+my_target_structure_acronym_list = ['VISp1', 'VISp2/3', 'VISp4', 'VISp5', 'VISp6a', 'VISp6b'] 
+my_LIMS_id = 100141598 # LGd Injection
 
-# Initializations:
+# Initialize:
 ontology = Ontology(data_dir=data_dir)
 experiment_manager = experiment.ExperimentManager(data_dir=data_dir)
 
 # Grab the particular experiment:
 my_experiment = experiment_manager.experiment_by_id(my_LIMS_id)
 
-# Get the injection site mask for this experiment, and assocaited density values:
-inj_mask = my_experiment.injection_mask()
-inj_mask_as_tuple_list = zip(*inj_mask.mask)
-density_vals = my_experiment.density(mask_obj=inj_mask)
+'''
+Print the mean projection density in VISp, broken down by layer
+some PD values are negative, and are ignored
+    -1: insufficient pixels data in a grid voxel to have reliable values
+    -2: missing tile
+    -3: no data (manually annotated)
+'''
+print "%7s: %3s %7s" % ('Area', '#:', 'mean:')
+for curr_acronym in my_target_structure_acronym_list:
+    curr_id = ontology.acronym_id_dict[curr_acronym]
+    m_right = ontology.get_mask_from_id_right_hemisphere_nonzero(curr_id)
+    density_vals = my_experiment.density(mask_obj=m_right)
+    density_vals_clean = density_vals[density_vals>=0]
+    print "%7s: %3s %7.4f" % (curr_acronym, len(density_vals_clean), density_vals_clean.mean()) 
 
-# For each voxel in the injection site, print its location and the associated density value: 
-for voxel, density in zip(inj_mask_as_tuple_list, density_vals):
-    print voxel, density
+
 
 
 
