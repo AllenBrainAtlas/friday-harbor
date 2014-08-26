@@ -1,5 +1,6 @@
 *.pyc
 .project
 .pydevproject
-/data/src/grid_annotation/*
-/data/src/raw_data/*
+build/*
+dist/*
+friday_harbor.egg-info/*
