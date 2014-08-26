@@ -105,10 +105,13 @@ def write(header_file_name, meta, raw):
     remainder will be pulled from the supplied 'meta' dictionary.  If they
     do not exist there, DEFAULT_HEADER_VALUES are used.
     '''
-    base, ext = os.path.splitext(header_file_name)
+    
+    header_dir = os.path.dirname(header_file_name)
+    base, ext = os.path.splitext(os.path.basename(header_file_name))
     assert ext == '.mhd', "%s is not an MHD file" % (header_file_name)
 
     raw_file_name = base + ".raw"
+    raw_file_path = os.path.join( header_dir, raw_file_name )
     meta['ElementDataFile'] = raw_file_name
     meta['DimSize'] = ' '.join([ str(i) for i in raw.shape ])
     meta['ElementType'] = INV_TYPE_MAP[raw.dtype]
@@ -121,4 +124,4 @@ def write(header_file_name, meta, raw):
                 header_file.write(k + ' = ' + DEFAULT_HEADER_VALUES[k] + '\n')
 
     # note the transpose! numpy.tofile writes in 'C' order only, so transpose to 'F'.
-    raw.transpose().tofile(raw_file_name)
+    raw.transpose().tofile(raw_file_path)
