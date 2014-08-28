@@ -4,7 +4,7 @@
 This repository provides a python wrapper library for accessing and manipulating voxel data from the Allen Mouse Connectivity Atlas (http://connectivity.brain-map.org/).
 The library may be updated from time-to-time over the course, so if possible please check out a clone for easy updating.  Use python setup.py --version to check your version.
 
-Check out the [wiki page](https://github.com/AllenBrainAtlas/friday-harbor/wiki/Resources) for helpful resources
+Check out the [wiki page](https://allendynamicbrain2014.wikispaces.com/Resources) for helpful resources
 
 ### Library Version:
 Current version is defined [here](https://github.com/AllenBrainAtlas/friday-harbor/blob/master/setup.py)
