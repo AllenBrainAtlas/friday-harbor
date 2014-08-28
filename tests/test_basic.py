@@ -112,6 +112,14 @@ def test_centroid():
     MOp_id = ontology.acronym_id_dict['MOp']
     MOp_mask = ontology.get_mask_from_id_nonzero(MOp_id)
     assert tuple(map(int,MOp_mask.centroid)) == (43, 21, 56)
+    
+def test_cortex():
+    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    assert len([e for e in experiment_manager.cortex()]) == 648
+    
+def test_noncortex():
+    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    assert len([e for e in experiment_manager.noncortex()]) == 1124
         
 if __name__ == "__main__":
     test_structure_list_length()
@@ -121,3 +129,5 @@ if __name__ == "__main__":
     test_intersection()
     test_structure()
     test_centroid()
+    test_cortex()
+    test_noncortex()
