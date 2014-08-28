@@ -6,9 +6,6 @@ The library may be updated from time-to-time over the course, so if possible ple
 
 Check out the [wiki page](https://github.com/AllenBrainAtlas/friday-harbor/wiki/Resources) for helpful resources
 
-### Lecture slides:
-Lecture slides are in the ["ppt" subdirectory](https://github.com/AllenBrainAtlas/friday-harbor/tree/master/ppt)
-
 ### Library Version:
 Current version is defined [here](https://github.com/AllenBrainAtlas/friday-harbor/blob/master/setup.py)
 
