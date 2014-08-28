@@ -21,6 +21,7 @@ import json
 import h5py
 from friday_harbor.mask import Mask 
 from friday_harbor.paths import Paths
+from friday_harbor.structure import Ontology
 
 class Experiment(object):
     '''
@@ -31,7 +32,7 @@ class Experiment(object):
     '''
 
     @staticmethod
-    def from_json(e_dict, paths):
+    def from_json(e_dict, paths, ontology):
         '''
         Take a dictionary, which is expected to contain the fields resulting from
         a json import of API-downloaded experiment metadata, sanitize the keys and 
@@ -62,6 +63,7 @@ class Experiment(object):
                 
         import_dict['structure_color'] = str(e_dict['structure-color'])
         import_dict['structure_id'] = int(e_dict['structure-id'])
+        import_dict['structure'] = ontology.structure_by_id(import_dict['structure_id'])
         import_dict['sum'] = float(e_dict['sum'])
         
         if import_dict['transgenic_line'] == '':
@@ -142,6 +144,7 @@ class ExperimentManager( object ):
     def __init__(self, data_dir=None):
 
         self.paths = Paths(data_dir)
+        self.ontology = Ontology(data_dir)
         experiment_json_file_name = self.paths.experiment_json_file_name
         raw_data_dir = self.paths.experiment_raw_data_directory
             
@@ -151,7 +154,7 @@ class ExperimentManager( object ):
         with open(experiment_json_file_name) as f:
             experiment_data = json.load(f)
 
-            self.experiment_list = [ Experiment.from_json(d, self.paths) for d in experiment_data ]
+            self.experiment_list = [ Experiment.from_json(d, self.paths, self.ontology) for d in experiment_data ]
 
         self.experiments_by_id = { e.id: e for e in self.experiment_list }
 
@@ -169,11 +172,11 @@ class ExperimentManager( object ):
 
     def cortex(self):
         ''' Return a generator for just the cortical injections. '''
-        return ( e for e in self.experiment_list if 315 in e.path_to_root )
+        return ( e for e in self.experiment_list if 315 in e.structure.path_to_root )
 
     def noncortex(self):
         ''' Return a generator for just the cortical injections. '''
-        return ( e for e in self.experiment_list if not (315 in e.path_to_root) )
+        return ( e for e in self.experiment_list if not (315 in e.structure.path_to_root) )
         
     def experiment_by_id(self, experiment_id):
         ''' Get a handle to an experiment by its id. '''
