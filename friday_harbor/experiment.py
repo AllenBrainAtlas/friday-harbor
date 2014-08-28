@@ -64,7 +64,7 @@ class Experiment(object):
         import_dict['structure_id'] = int(e_dict['structure-id'])
         import_dict['sum'] = float(e_dict['sum'])
         
-        if import_dict['strain'] == 'C57BL/6J':
+        if import_dict['transgenic_line'] == '':
             import_dict['wildtype'] = True 
         else:
             import_dict['wildtype'] = False

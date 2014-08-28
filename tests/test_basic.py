@@ -29,7 +29,7 @@ def test_experiment_list_length():
  
     experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
     assert len(experiment_manager.experiment_list) == 1772
-    assert len([e for e in experiment_manager.wildtype()]) == 475
+    assert len([e for e in experiment_manager.wildtype()]) == 469
 
 def test_mask():
     experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
