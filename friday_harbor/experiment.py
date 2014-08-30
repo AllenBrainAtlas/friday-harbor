@@ -120,6 +120,40 @@ class Experiment(object):
             return vals[mask_obj.mask]
         else:
             return vals
+            
+    def energy(self, mask_obj=None):
+        ''' Extract the energy volume voxel data from the hdf5 file if it exists. '''
+        f = h5py.File(self.paths.projection_energies_file_name, 'r')
+        
+        try:
+            vals = f[str(self.id)].value
+        except KeyError as e:
+            f.close()
+            raise e
+
+        f.close()
+
+        if mask_obj:
+            return vals[mask_obj.mask]
+        else:
+            return vals
+     
+    def intensity(self, mask_obj=None):
+        ''' Extract the energy volume voxel data from the hdf5 file if it exists. '''
+        f = h5py.File(self.paths.projection_intensities_file_name, 'r')
+        
+        try:
+            vals = f[str(self.id)].value
+        except KeyError as e:
+            f.close()
+            raise e
+
+        f.close()
+
+        if mask_obj:
+            return vals[mask_obj.mask]
+        else:
+            return vals
         
     def injection_mask(self, shell=False):
         ''' Extract the injection mask from the hdf5 file if it exists. '''        

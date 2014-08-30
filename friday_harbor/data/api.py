@@ -42,9 +42,12 @@ def structure_search():
 
     return query(q)
 
-def save_experiment_grid_data(experiment_id, file_name):
-    exp_info_url_pattern = API_HOST + 'grid_data/download/%s?include=density,injection'
-    experiment_info_url =  exp_info_url_pattern % experiment_id
+def save_experiment_grid_data(experiment_id, file_name, include=None):
+    if include is None:
+        include = [ "density", "injection", "intensity" ]
+        
+    exp_info_url_pattern = API_HOST + 'grid_data/download/%s?include=%s'
+    experiment_info_url =  exp_info_url_pattern % (experiment_id, ','.join(include))
 
     # Get data:
     with open(file_name,'wb') as handle:

@@ -35,24 +35,43 @@ def extract_experiment_to_hdf5(data_dir='.'):
     # Settings:
     f_proj = h5py.File(exp_manager.paths.projection_densities_file_name, 'w')
     f_inj_vol = h5py.File(exp_manager.paths.injection_volumes_file_name, 'w')
+    f_energy = h5py.File(exp_manager.paths.projection_energies_file_name, 'w')
+    f_intensity = h5py.File(exp_manager.paths.projection_intensities_file_name, 'w')
 
     # Extract volumes of PD and injection sites:
     for experiment in exp_manager:
         experiment_id = str(experiment.id)
         curr_dir = os.path.join(raw_data_dir, experiment_id)
-  
-        density_mhd = os.path.join(curr_dir, 'density.mhd')
-        density_info, density_array = mhd.read(density_mhd)
         
-        f_proj[experiment_id] = density_array
-    
+        density_mhd = os.path.join(curr_dir, 'density.mhd')
+        
+        if os.path.exists(density_mhd):
+            density_info, density_array = mhd.read(density_mhd)        
+            f_proj[experiment_id] = density_array
+            
         injection_mhd = os.path.join(curr_dir, 'injection.mhd')
-        injection_info, injection_array = mhd.read(injection_mhd)
-
-        f_inj_vol[experiment_id] = injection_array
+        
+        if os.path.exists(injection_mhd):
+            injection_info, injection_array = mhd.read(injection_mhd)
+            f_inj_vol[experiment_id] = injection_array
+            
+        energy_mhd = os.path.join(curr_dir, 'energy.mhd')
+        
+        if os.path.exists(energy_mhd):        
+            energy_info, energy_array = mhd.read(energy_mhd)
+            f_energy[experiment_id] = energy_array
+        
+        intensity_mhd = os.path.join(curr_dir, 'intensity.mhd')
+        
+        if os.path.exists(intensity_mhd):        
+            intensity_info, intensity_array = mhd.read(intensity_mhd)
+            f_intensity[experiment_id] = intensity_array
 
     f_proj.close()
     f_inj_vol.close()
+    f_energy.close()
+    f_intensity.close()
+	
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

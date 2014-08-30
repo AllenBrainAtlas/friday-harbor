@@ -33,6 +33,8 @@ class Paths( object ):
         self.injection_masks_file_name = os.path.normpath(os.path.join(self.data_dir, 'injection_masks.hdf5'))
         self.injection_masks_shell_file_name = os.path.normpath(os.path.join(self.data_dir, 'injection_masks_shell.hdf5'))
         self.projection_densities_file_name = os.path.normpath(os.path.join(self.data_dir, 'projection_density.hdf5'))
+        self.projection_energies_file_name = os.path.normpath(os.path.join(self.data_dir, 'projection_energy.hdf5'))
+        self.projection_intensities_file_name = os.path.normpath(os.path.join(self.data_dir, 'projection_intensity.hdf5'))
 
         self.left_hemisphere_mask_file_name = os.path.normpath(os.path.join(self.data_dir, 'left_hemisphere_mask.hdf5'))
         self.left_hemisphere_nonzero_mask_file_name = os.path.normpath(os.path.join(self.data_dir, 'left_hemisphere_nonzero_mask.hdf5'))

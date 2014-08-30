@@ -17,7 +17,7 @@
 from setuptools import setup, find_packages
 setup(
     name = "friday_harbor",
-    version = "0.5",
+    version = "0.6",
     packages = find_packages(exclude=["test"]),
     install_requires = [ 'numpy', 'scipy', 'h5py', 'requests' ],
     package_data = { '': ['*.py', '*.sh' ] }

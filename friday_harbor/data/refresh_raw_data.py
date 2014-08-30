@@ -24,7 +24,7 @@ from friday_harbor.paths import Paths
 from friday_harbor.data.api import save_experiment_grid_data
 from friday_harbor.data.api import unzip_experiment_grid_data
 
-def refresh_raw_data(data_dir='.'):
+def refresh_raw_data(data_dir='.', include=None):
     paths = Paths(data_dir)
 
     # Settings:
@@ -42,14 +42,17 @@ def refresh_raw_data(data_dir='.'):
         file_name = os.path.join(paths.experiment_raw_data_directory, 'experiment_%s.zip' % experiment.id)
         unzip_path = os.path.join(paths.experiment_raw_data_directory, '%s' % experiment.id)        
 
-        save_experiment_grid_data(experiment.id, file_name)
+        save_experiment_grid_data(experiment.id, file_name, include)
         unzip_experiment_grid_data(file_name, unzip_path)
 
         print file_name
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    nargs = len(sys.argv)
+    if nargs == 2:
         refresh_raw_data(sys.argv[1])
+    elif nargs > 2:
+        refresh_raw_data(sys.argv[1], sys.argv[2:])
     else:
         refresh_raw_data()
     
