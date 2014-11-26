@@ -16,13 +16,13 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-import friday_harbor.experiment as experiment
+from friday_harbor.experiment_manager import ExperimentManager
 
 # Point this to your data directory:
 data_dir = '../friday_harbor/data' 
 
 def test_wildtype_count():
-    experiment_manager = experiment.ExperimentManager(data_dir=data_dir)
+    experiment_manager = ExperimentManager(data_dir=data_dir)
     assert len([e for e in experiment_manager.experiment_list if e.wildtype==True]) == 469
     print 'Wiltype count: %s' % 469
     

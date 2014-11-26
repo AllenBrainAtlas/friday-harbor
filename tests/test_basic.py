@@ -16,23 +16,23 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-import friday_harbor.structure as structure
-import friday_harbor.experiment as experiment
+from friday_harbor.ontology import Ontology
+from friday_harbor.experiment_manager import ExperimentManager
 import friday_harbor.mask as mask
 import numpy as np
 
 def test_structure_list_length():
-    base_ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    base_ontology = Ontology(data_dir='../friday_harbor/data')
     assert len(base_ontology.structure_list) == 1205
     
 def test_experiment_list_length():
  
-    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    experiment_manager = ExperimentManager(data_dir='../friday_harbor/data')
     assert len(experiment_manager.experiment_list) == 1772
     assert len([e for e in experiment_manager.wildtype()]) == 469
 
 def test_mask():
-    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    experiment_manager = ExperimentManager(data_dir='../friday_harbor/data')
     e = experiment_manager.experiments_by_id[180436360]
     assert e.density(mask_obj=e.injection_mask()).sum() == 2289.300048828125
     
@@ -56,11 +56,11 @@ def test_union():
             
         return np.array(xx), np.array(yy), np.array(zz)
     
-    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    ontology = Ontology(data_dir='../friday_harbor/data')
     LGd_id = ontology.acronym_id_dict['LGd']
     VISp_id = ontology.acronym_id_dict['VISp']
-    LGd_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(LGd_id)
-    VISp_mask = ontology.get_mask_from_id_right_hemisphere_nonzero(VISp_id)
+    LGd_mask = ontology.get_mask(LGd_id, hemisphere='left')
+    VISp_mask = ontology.get_mask(VISp_id, hemisphere='right')
     for ii in range(2):
         list_1 = sorted(union(LGd_mask, VISp_mask)[ii])
         list_2 = sorted(mask.Mask.union(LGd_mask, VISp_mask).mask[ii])
@@ -85,40 +85,40 @@ def test_intersection():
             
         return (np.array(xx), np.array(yy), np.array(zz))
 
-    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    ontology = Ontology(data_dir='../friday_harbor/data')
     VIS_id = ontology.acronym_id_dict['VIS']
     VISp_id = ontology.acronym_id_dict['VISp']
-    VIS_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(VIS_id)
-    VISp_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(VISp_id)
+    VIS_mask = ontology.get_mask(VIS_id, hemisphere='left')
+    VISp_mask = ontology.get_mask(VISp_id, hemisphere='left')
     for ii in range(2):
         list_1 = sorted(intersection(VIS_mask, VISp_mask)[ii])
         list_2 = sorted(mask.Mask.intersection(VIS_mask, VISp_mask).mask[ii])
         assert list_1 == list_2
 
 def test_structure():
-    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    ontology = Ontology(data_dir='../friday_harbor/data')
     LGd_id = ontology.acronym_id_dict['LGd']
-    LGd_mask = ontology.get_mask_from_id_left_hemisphere_nonzero(LGd_id)
+    LGd_mask = ontology.get_mask(LGd_id, hemisphere='left')
     assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 70176
     
-    LGd_mask = ontology.get_mask_from_id_nonzero(LGd_id)
+    LGd_mask = ontology.get_mask(LGd_id)
     assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 140067
-    LGd_mask = ontology.get_mask_from_id_right_hemisphere_nonzero(LGd_id)
+    LGd_mask = ontology.get_mask(LGd_id, hemisphere='right')
     assert LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() + LGd_mask.mask[0].sum() == 69891
 
 def test_centroid():
     
-    ontology = structure.Ontology(data_dir='../friday_harbor/data')
+    ontology = Ontology(data_dir='../friday_harbor/data')
     MOp_id = ontology.acronym_id_dict['MOp']
-    MOp_mask = ontology.get_mask_from_id_nonzero(MOp_id)
+    MOp_mask = ontology.get_mask(MOp_id)
     assert tuple(map(int,MOp_mask.centroid)) == (43, 21, 56)
     
 def test_cortex():
-    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    experiment_manager = ExperimentManager(data_dir='../friday_harbor/data')
     assert len([e for e in experiment_manager.cortex()]) == 648
     
 def test_noncortex():
-    experiment_manager = experiment.ExperimentManager(data_dir='../friday_harbor/data')
+    experiment_manager = ExperimentManager(data_dir='../friday_harbor/data')
     assert len([e for e in experiment_manager.noncortex()]) == 1124
         
 if __name__ == "__main__":

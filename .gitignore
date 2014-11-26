@@ -4,3 +4,4 @@
 build/*
 dist/*
 friday_harbor.egg-info/*
+friday_harbor/data
