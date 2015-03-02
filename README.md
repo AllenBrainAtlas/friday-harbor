@@ -16,8 +16,14 @@ Example scripts are located in ["examples" subdirectory](https://github.com/Alle
 
 Install this package by:
 
-	$ cd /path/to/repo.git
-	$ python setup.py install
+    $ cd /path/to/repo.git
+    $ python setup.py install
+
+## Download the connectivity atlas:
+
+   $ python
+   > from friday_harbor.data.regenerate_data import regenerate_data
+   > regenerate_data('/path/to/data/directory/')
 
 ## Dependencies (python packages):
 	numpy/scipy
