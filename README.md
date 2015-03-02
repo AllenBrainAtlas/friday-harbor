@@ -22,8 +22,8 @@ Install this package by:
 ## Download the connectivity atlas:
 
    $ python
-   > from friday_harbor.data.regenerate_data import regenerate_data
-   > regenerate_data('/path/to/data/directory/')
+   \> from friday_harbor.data.regenerate_data import regenerate_data
+   \> regenerate_data('/path/to/data/directory/')
 
 ## Dependencies (python packages):
 	numpy/scipy
