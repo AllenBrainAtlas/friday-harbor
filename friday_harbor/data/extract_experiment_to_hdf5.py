@@ -25,7 +25,7 @@ from friday_harbor import mhd
 from friday_harbor.mask import Mask
 from friday_harbor.utilities import write_dictionary_to_group
 from friday_harbor.paths import Paths
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.experiment_manager import ExperimentManager
 
 def extract_experiment_to_hdf5(data_dir='.'):
     exp_manager = ExperimentManager(data_dir)

@@ -22,8 +22,8 @@ import itertools
 import h5py
 import numpy as np
 from friday_harbor.mask import Mask
-from friday_harbor.structure import Ontology
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.ontology import Ontology
+from friday_harbor.experiment_manager import ExperimentManager
 from friday_harbor.annotation import StructureAnnotation
 from friday_harbor.paths import Paths
 import copy

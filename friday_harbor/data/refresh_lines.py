@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.experiment_manager import ExperimentManager
 from friday_harbor.mask import Mask
 from friday_harbor.api import target_spatial_search
 

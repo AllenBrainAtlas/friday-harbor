@@ -16,7 +16,7 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-from friday_harbor.structure import Ontology
+from friday_harbor.ontology import Ontology
 from friday_harbor.mask import Mask
 
 # Settings:

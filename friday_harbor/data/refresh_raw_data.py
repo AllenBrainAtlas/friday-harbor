@@ -19,7 +19,7 @@
 import requests
 import os
 import sys
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.experiment_manager import ExperimentManager
 from friday_harbor.paths import Paths
 from friday_harbor.data.api import save_experiment_grid_data
 from friday_harbor.data.api import unzip_experiment_grid_data

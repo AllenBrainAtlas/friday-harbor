@@ -21,7 +21,7 @@ import os
 import numpy as np
 import re
 import h5py
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.experiment_manager import ExperimentManager
 
 def pickle(data, file_name):
     

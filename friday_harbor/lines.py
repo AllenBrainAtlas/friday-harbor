@@ -23,7 +23,7 @@ import os
 
 from friday_harbor.paths import Paths
 from friday_harbor.mask import Mask
-from friday_harbor.experiment import ExperimentManager
+from friday_harbor.experiment_manager import ExperimentManager
 
 
 class Lines( object ):
