@@ -19,11 +19,10 @@ Install this package by:
     $ cd /path/to/repo.git
     $ python setup.py install
 
-## Download the connectivity atlas:
+## Download the connectivity atlas (from a python terminal):
 
-   $ python
-   \> from friday_harbor.data.regenerate_data import regenerate_data
-   \> regenerate_data('/path/to/data/directory/')
+    $ from friday_harbor.data.regenerate_data import regenerate_data
+    $ regenerate_data('/path/to/data/directory/')
 
 ## Dependencies (python packages):
 	numpy/scipy
