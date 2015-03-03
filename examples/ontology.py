@@ -19,7 +19,7 @@
 from friday_harbor.ontology import Ontology
 
 # Settings:
-data_dir = '../friday_harbor/data'
+data_dir = '.'
 
 # Construct the ontology from the data directory:
 ontology = Ontology(data_dir=data_dir)

@@ -16,13 +16,13 @@
 # June 11 2014
 # nicholasc@alleninstitute.org
 
-import friday_harbor.experiment as experiment
+from friday_harbor.experiment_manager import ExperimentManager
 
 # Settings:
-data_dir = '../friday_harbor/data'
+data_dir = '.'
 
 # Get the experiment manager:
-experiment_manager = experiment.ExperimentManager(data_dir=data_dir)
+experiment_manager = ExperimentManager(data_dir=data_dir)
 
 # Print some data about each one:
 for e in experiment_manager.experiment_list:

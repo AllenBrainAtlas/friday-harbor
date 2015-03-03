@@ -18,15 +18,15 @@
 
 from friday_harbor.ontology import Ontology
 from friday_harbor.mask import Mask
-import friday_harbor.experiment as experiment
+from friday_harbor.experiment_manager import ExperimentManager
 
 # Settings:
-data_dir = '../friday_harbor/data' 
+data_dir = '.' 
 my_LIMS_id = 277714322
 
 # Initializations:
 ontology = Ontology(data_dir=data_dir)
-experiment_manager = experiment.ExperimentManager(data_dir=data_dir)
+experiment_manager = ExperimentManager(data_dir=data_dir)
 
 # Grab the particular experiment:
 my_experiment = experiment_manager.experiment_by_id(my_LIMS_id)

@@ -18,16 +18,16 @@
 
 from friday_harbor.ontology import Ontology
 from friday_harbor.mask import Mask
-import friday_harbor.experiment as experiment
+from friday_harbor.experiment_manager import ExperimentManager
 
 # Settings:
-data_dir = '../friday_harbor/data'
+data_dir = '.'
 my_target_structure_acronym_list = ['VISp1', 'VISp2/3', 'VISp4', 'VISp5', 'VISp6a', 'VISp6b'] 
 my_LIMS_id = 100141598 # LGd Injection
 
 # Initialize:
 ontology = Ontology(data_dir=data_dir)
-experiment_manager = experiment.ExperimentManager(data_dir=data_dir)
+experiment_manager = ExperimentManager(data_dir=data_dir)
 
 # Grab the particular experiment:
 my_experiment = experiment_manager.experiment_by_id(my_LIMS_id)
@@ -42,7 +42,7 @@ some PD values are negative, and are ignored
 print "%7s: %3s %7s" % ('Area', '#:', 'mean:')
 for curr_acronym in my_target_structure_acronym_list:
     curr_id = ontology.acronym_id_dict[curr_acronym]
-    m_right = ontology.get_mask_from_id_right_hemisphere_nonzero(curr_id)
+    m_right = ontology.get_mask(curr_id, "right")
     density_vals = my_experiment.density(mask_obj=m_right)
     density_vals_clean = density_vals[density_vals>=0]
     print "%7s: %3s %7.4f" % (curr_acronym, len(density_vals_clean), density_vals_clean.mean()) 
